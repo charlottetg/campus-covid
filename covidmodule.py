@@ -31,34 +31,12 @@ class Person:
         if (self.before_symptomatic == -1 or self.before_symptomatic == -2): # healthy or in quarantine
             return False # do nothing
 
-    """
-    def spread_covid(self):
-        for
-    """
-
 
 class Graph:
 
     def __init__(self, adjacency_list):
         self.adjacency_list = adjacency_list
 
-    """
-    # every time step
-    def graph_spread(self):
-
-        for person_id in self.adjacency_list.keys():
-            person = adjacency_list[person_id]
-            if person.before_symptomatic > 0: # asymptomatic! danger!
-                person.before_symptomatic -= 1 # decrease by 1
-
-
-        np.random.choice([])
-
-    def dynamic_test(self, people_to_test):
-
-        return discovered_positives
-
-    """
 
     # display graph using networkx
     def show_graph(self):
@@ -80,8 +58,12 @@ class Graph:
                 g.add_edge(person_id, contact[0], weight = contact[1])
 
         healthy = [ person_id for person_id in g.nodes() if people_map[person_id].before_symptomatic == -1]
+        print(len(healthy))
         asymptomatic = [ person_id for person_id in g.nodes() if people_map[person_id].before_symptomatic >= 0]
+        print(len(asymptomatic))
         quarantined = [ person_id for person_id in g.nodes() if people_map[person_id].before_symptomatic == -2]
+        print(len(quarantined))
+
 
         pos = nx.circular_layout(g)  # positions for all nodes
 
@@ -101,3 +83,30 @@ class Graph:
         nx.draw_networkx_edges(g, pos, edgelist = dangerous_contacts, width=1, edge_color="red")
 
         plt.show()
+
+
+    # to be called on self and an asymptomatic people: probabalistically gives covid to their contacts
+    def individual_spread(self, spreader):
+        for contact in spreader.contacts:
+            if self.adjacency_list[contact[0]].before_symptomatic == -1: # healthy, susceptible
+                transmission_prob = contact[1]
+
+                # if edge is traveled
+                if random.choices([True, False], weights = [transmission_prob, (1 - transmission_prob)]):
+                    self.adjacency_list[contact[0]].get_covid()
+
+
+    # what happens to the graph every time step
+    def graph_spread(self):
+        for person in self.adjacency_list.values():
+            if person.before_symptomatic >= 0: # asymptomatic! danger!
+                self.individual_spread(person)
+                person.before_symptomatic -= 1 # decrease by 1
+            if person.before_symptomatic == 0: # show symptoms
+                person.before_symptomatic = -2 # quarantine
+
+
+    """
+    def dynamic_test(self, people_to_test):
+        return discovered_positives
+    """
