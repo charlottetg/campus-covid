@@ -21,18 +21,18 @@ adjacency_list = {}
 # create a new person object, add it to adjacency_list (associated with ID)
 for i in range(1, NUM_STUDENTS+1): #for all of the students
 
-    current_contacts = []
+    relationships = []
 
     # can eventually exclude i
     total_contacts = random.sample(range(1, NUM_STUDENTS+1), NUM_TANG + NUM_CLOSE)
 
     for j in range(NUM_TANG + NUM_CLOSE):
         if (j < NUM_CLOSE):
-            relationships.add([total_contacts[j], PROB_CLOSE])
+            relationships.append([total_contacts[j], PROB_CLOSE])
         else:
-            relationships.add([total_contacts[j], PROB_TANG])
+            relationships.append([total_contacts[j], PROB_TANG])
 
-    adjacency_list[i] = Person(current_contacts)
+    adjacency_list[i] = Person(relationships)
 
 # create graph instance
 current_graph = Graph(adjacency_list)
@@ -46,10 +46,10 @@ print(current_graph)
 
 
 
-# code for testing
 
-#testing the viewing by giving 5 random people covid
 """
+~graveyard~/testing code
+
 # add edges
 for i in range(1, NUM_STUDENTS+1):
     for pair in people[i].contacts:

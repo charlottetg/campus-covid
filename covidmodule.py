@@ -37,9 +37,11 @@ class Graph:
     def __init__(self, adjacency_list):
         self.adjacency_list = adjacency_list
 
+    """
     def covid_spread(self):
 
 
     def dynamic_test(self, people_to_test):
 
         return discovered_positives
+    """
