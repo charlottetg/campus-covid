@@ -38,55 +38,7 @@ for i in range(1, NUM_STUDENTS+1): #for all of the students
 
 # create graph instance
 current_graph = Graph(adjacency_list)
-
-
-
-
-
-
-
-
-# testing (visualize graph in network x)
-g_test = nx.Graph()
-people_map = current_graph.adjacency_list
-people_ids = people_map.keys()
-
-# nodes
-for person_id in people_ids:
-    g_test.add_node(person_id)
-
-# edges
-for person_id in people_ids:
-    for contact in people_map[person_id].contacts:
-        g_test.add_edge(person_id, contact[0], weight = contact[1])
-
-
-healthy = [ person_id for person_id in g_test.nodes() if people_map[person_id].before_symptomatic == -1]
-asymptomatic = [ person_id for person_id in g_test.nodes() if people_map[person_id].before_symptomatic >= 0]
-quarantined = [ person_id for person_id in g_test.nodes() if people_map[person_id].before_symptomatic == -2]
-
-pos = nx.circular_layout(g_test)  # positions for all nodes
-
-# nodes
-nx.draw_networkx_nodes(g_test, pos, nodelist= healthy, node_size=20, node_color="green")
-nx.draw_networkx_nodes(g_test, pos, nodelist= asymptomatic, node_size=20, node_color="red")
-nx.draw_networkx_nodes(g_test, pos, nodelist= quarantined, node_size=20, node_color="black")
-
-# make edges
-close_contacts = [(u, v) for (u, v, d) in g_test.edges(data=True) if d["weight"] == PROB_CLOSE]
-tang_contacts = [(u, v) for (u, v, d) in g_test.edges(data=True) if d["weight"] == PROB_TANG]
-dangerous_contacts = [(u, v) for (u, v, d) in g_test.edges(data=True) if people_map[u].before_symptomatic >= 0 or people_map[v].before_symptomatic >= 0]
-
-# draw edges
-nx.draw_networkx_edges(g_test, pos, edgelist=tang_contacts, width=1)
-nx.draw_networkx_edges(g_test, pos, edgelist=close_contacts, width=2)
-nx.draw_networkx_edges(g_test, pos, edgelist = dangerous_contacts, width=1, edge_color="red", style = "dashed")
-
-plt.show()
-
-
-
-
+current_graph.show_graph()
 
 
 
