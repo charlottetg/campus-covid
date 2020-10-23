@@ -7,10 +7,6 @@ import numpy as np
 
 class Person:
 
-    # people constants
-    MEAN_SYMPTOMATIC = 6 # 6 days on average
-    STANDARD_DEV_SYMPTOMATIC = 1.2 # can change this later
-
     def __init__(self, contacts):
         self.contacts = contacts # this is a 2D array [friend, weight]
 
@@ -19,8 +15,13 @@ class Person:
         self.before_symptomatic = -1
 
     def get_covid(self):
+
+        # people constants (move these out?)
+        MEAN_SYMPTOMATIC = 6 # 6 days on average
+        STANDARD_DEV_SYMPTOMATIC = 1.2 # can change this later
+
         # randomly sample from disrubtion to get # time steps before symptomatic
-        if (before_symptomatic == -1):
+        if (self.before_symptomatic == -1):
             self.before_symptomatic = np.random.normal(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
 
     def get_tested(self):
