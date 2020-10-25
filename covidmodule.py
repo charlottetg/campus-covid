@@ -58,12 +58,8 @@ class Graph:
                 g.add_edge(person_id, contact[0], weight = contact[1])
 
         healthy = [ person_id for person_id in g.nodes() if people_map[person_id].before_symptomatic == -1]
-        print(len(healthy))
         asymptomatic = [ person_id for person_id in g.nodes() if people_map[person_id].before_symptomatic >= 0]
-        print(len(asymptomatic))
         quarantined = [ person_id for person_id in g.nodes() if people_map[person_id].before_symptomatic == -2]
-        print(len(quarantined))
-
 
         pos = nx.circular_layout(g)  # positions for all nodes
 
@@ -82,6 +78,10 @@ class Graph:
         nx.draw_networkx_edges(g, pos, edgelist=close_contacts, width=2)
         nx.draw_networkx_edges(g, pos, edgelist = dangerous_contacts, width=1, edge_color="red")
 
+        print("healthy: " + str(len(healthy)))
+        print("asymptomatic: " + str(len(asymptomatic)))
+        print("quarantined: " + str(len(quarantined)))
+
         plt.show()
 
 
@@ -98,12 +98,18 @@ class Graph:
 
     # what happens to the graph every time step
     def graph_spread(self):
+
+        # make a list of people who start off asymptomatic
+        current_spreaders = []
         for person in self.adjacency_list.values():
-            if person.before_symptomatic >= 0: # asymptomatic! danger!
-                self.individual_spread(person)
+            if person.before_symptomatic >= 0: # asymptomatic
                 person.before_symptomatic -= 1 # decrease by 1
-            if person.before_symptomatic == 0: # show symptoms
-                person.before_symptomatic = -2 # quarantine
+                current_spreaders.append(person)
+            if person.before_symptomatic == 0: # now showing symptoms
+                person.before_symptomatic = -2 # quarantine (still spread this time step, but not after)
+
+        for spreader in current_spreaders:
+            self.individual_spread(spreader)
 
 
     """

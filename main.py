@@ -39,7 +39,8 @@ for i in range(1, NUM_STUDENTS+1): #for all of the students
 # create graph instance
 graph = Graph(adjacency_list)
 
-graph.show_graph()
+graph.graph_spread()
+graph.graph_spread()
+graph.graph_spread()
 
-graph.individual_spread(graph.adjacency_list[1])
 graph.show_graph()
