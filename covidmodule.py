@@ -41,8 +41,8 @@ class Graph:
     # display graph using networkx
     def show_graph(self):
 
-        PROB_CLOSE = 2 # will eventually want to make this a probability
-        PROB_TANG = 1 # will eventually want to make this a probability
+        PROB_CLOSE = .174 # will eventually want to make this a probability
+        PROB_TANG = .031 # will eventually want to make this a probability
 
         g = nx.Graph()
         people_map = self.adjacency_list

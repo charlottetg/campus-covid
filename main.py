@@ -41,9 +41,5 @@ graph = Graph(adjacency_list)
 
 graph.show_graph()
 
-graph.graph_spread()
-graph.graph_spread()
-graph.graph_spread()
-
-
+graph.individual_spread(graph.adjacency_list[1])
 graph.show_graph()
