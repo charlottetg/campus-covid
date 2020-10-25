@@ -14,6 +14,8 @@ class Person:
         # this encodes their state (-1 = healthy, >= 0 = asymptomatic, -2 = quarantined)
         self.before_symptomatic = -1
 
+        self.patient_zero = False # can take this out later
+
     def get_covid(self):
 
         # people constants (move these out?)
@@ -41,16 +43,19 @@ class Graph:
     # display graph using networkx
     def show_graph(self):
 
-        PROB_CLOSE = .174 # will eventually want to make this a probability
-        PROB_TANG = .031 # will eventually want to make this a probability
+        # eventually take these out
+        PROB_CLOSE = 0
+        PROB_TANG = 1
 
         g = nx.Graph()
         people_map = self.adjacency_list
         people_ids = people_map.keys()
 
         # nodes
+        labels = {}
         for person_id in people_ids:
             g.add_node(person_id)
+            labels[person_id] = person_id # this is silly, take out later
 
         # edges
         for person_id in people_ids:
@@ -60,13 +65,18 @@ class Graph:
         healthy = [ person_id for person_id in g.nodes() if people_map[person_id].before_symptomatic == -1]
         asymptomatic = [ person_id for person_id in g.nodes() if people_map[person_id].before_symptomatic >= 0]
         quarantined = [ person_id for person_id in g.nodes() if people_map[person_id].before_symptomatic == -2]
+        patient_zero = [ person_id for person_id in g.nodes() if people_map[person_id].patient_zero]
 
         pos = nx.circular_layout(g)  # positions for all nodes
 
         # nodes
-        nx.draw_networkx_nodes(g, pos, nodelist= healthy, node_size=50, node_color="green")
-        nx.draw_networkx_nodes(g, pos, nodelist= asymptomatic, node_size=50, node_color="red")
-        nx.draw_networkx_nodes(g, pos, nodelist= quarantined, node_size=50, node_color="black")
+        nx.draw_networkx_nodes(g, pos, nodelist= healthy, node_size=250, node_color="green")
+        nx.draw_networkx_nodes(g, pos, nodelist= asymptomatic, node_size=250, node_color="red")
+        nx.draw_networkx_nodes(g, pos, nodelist= quarantined, node_size=250, node_color="black")
+        nx.draw_networkx_nodes(g, pos, nodelist= patient_zero, node_size=250, node_color="purple")
+
+        # labels
+        nx.draw_networkx_labels(g, pos, labels, font_size = 16)
 
         # make edges
         close_contacts = [(u, v) for (u, v, d) in g.edges(data=True) if d["weight"] == PROB_CLOSE]
@@ -92,7 +102,7 @@ class Graph:
                 transmission_prob = contact[1]
 
                 # if edge is traveled
-                if random.choices([True, False], weights = [transmission_prob, (1 - transmission_prob)]):
+                if random.choices([True, False], weights = [transmission_prob, (1 - transmission_prob)])[0]: # returns a list with one element
                     self.adjacency_list[contact[0]].get_covid()
 
 

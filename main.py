@@ -9,11 +9,12 @@ from covidmodule import Person
 from covidmodule import Graph
 
 # graph constants
-NUM_STUDENTS = 20
-NUM_CLOSE = 2
-PROB_CLOSE = .174 # will eventually want to make this a probability
-NUM_TANG = 5
-PROB_TANG = .031 # will eventually want to make this a probability
+NUM_STUDENTS = 10
+NUM_CLOSE = 1
+NUM_TANG = 3
+PROB_CLOSE = 0
+PROB_TANG = 1
+
 
 # build a people map
 adjacency_list = {}
@@ -33,14 +34,17 @@ for i in range(1, NUM_STUDENTS+1): #for all of the students
             relationships.append([total_contacts[j], PROB_TANG])
 
     adjacency_list[i] = Person(relationships)
+    print("person " + str(i) + ": " + str(relationships))
 
-    adjacency_list[1].get_covid() # give one person covid
+adjacency_list[1].get_covid() # give one person covid
+adjacency_list[1].patient_zero = True
+
 
 # create graph instance
 graph = Graph(adjacency_list)
 
 graph.graph_spread()
-graph.graph_spread()
-graph.graph_spread()
+#graph.graph_spread()
+#graph.graph_spread()
 
 graph.show_graph()
