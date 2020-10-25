@@ -12,8 +12,8 @@ from covidmodule import Graph
 NUM_STUDENTS = 10
 NUM_CLOSE = 1
 NUM_TANG = 3
-PROB_CLOSE = 0
-PROB_TANG = 1
+PROB_CLOSE = .174
+PROB_TANG = .031
 
 
 # build a people map
@@ -44,7 +44,5 @@ adjacency_list[1].patient_zero = True
 graph = Graph(adjacency_list)
 
 graph.graph_spread()
-#graph.graph_spread()
-#graph.graph_spread()
 
 graph.show_graph()

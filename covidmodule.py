@@ -44,8 +44,8 @@ class Graph:
     def show_graph(self):
 
         # eventually take these out
-        PROB_CLOSE = 0
-        PROB_TANG = 1
+        PROB_CLOSE = .174
+        PROB_TANG = .031
 
         g = nx.Graph()
         people_map = self.adjacency_list
@@ -80,12 +80,14 @@ class Graph:
 
         # make edges
         close_contacts = [(u, v) for (u, v, d) in g.edges(data=True) if d["weight"] == PROB_CLOSE]
+        print(close_contacts)
+
         tang_contacts = [(u, v) for (u, v, d) in g.edges(data=True) if d["weight"] == PROB_TANG]
         dangerous_contacts = [(u, v) for (u, v, d) in g.edges(data=True) if people_map[u].before_symptomatic >= 0 or people_map[v].before_symptomatic >= 0]
 
         # draw edges
-        nx.draw_networkx_edges(g, pos, edgelist=tang_contacts, width=1)
-        nx.draw_networkx_edges(g, pos, edgelist=close_contacts, width=2)
+        nx.draw_networkx_edges(g, pos, edgelist= tang_contacts, width=1)
+        nx.draw_networkx_edges(g, pos, edgelist= close_contacts, width=2)
         nx.draw_networkx_edges(g, pos, edgelist = dangerous_contacts, width=1, edge_color="red")
 
         print("healthy: " + str(len(healthy)))
