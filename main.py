@@ -41,13 +41,10 @@ adjacency_list[1].patient_zero = True
 # create graph instance
 graph = Graph(adjacency_list)
 
-#graph.graph_spread()
-#graph.print_contacts_info()
-#graph.print_stats()
-#graph.show_graph()
 
-while graph.num_quarantined() < 2:
+for i in range(7):
     graph.graph_spread()
+    graph.dynamic_test([random.randint(1,NUM_STUDENTS)])
 
 graph.print_stats()
 graph.show_graph()

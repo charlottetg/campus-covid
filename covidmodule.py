@@ -27,18 +27,18 @@ class Person:
         if (self.before_symptomatic == -1):
             self.before_symptomatic = math.floor(np.random.normal(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC))
 
+    # returns true if self has it
     def get_tested(self):
         if (self.before_symptomatic >= 0 ): # asymptomatic
             self.before_symptomatic = -2
-            return True # do something
-        if (self.before_symptomatic == -1 or self.before_symptomatic == -2): # healthy or in quarantine
-            return False # do nothing
+            return True # I think this is a weird structure
 
 
 class Graph:
 
     def __init__(self, adjacency_list):
         self.adjacency_list = adjacency_list
+        self.day = 0
 
 
     # display graph using networkx
@@ -106,6 +106,8 @@ class Graph:
 
     # what happens to the graph every time step
     def graph_spread(self):
+
+        print("day " + str(self.day))
         # make a list of people ids who start off asymptomatic
         current_spreaders = []
         for person_id in self.adjacency_list.keys():
@@ -119,6 +121,9 @@ class Graph:
 
         for spreader in current_spreaders:
             self.individual_spread(spreader)
+
+        # keep track of day
+        self.day += 1
 
     # for testing
     def print_contacts_info(self):
@@ -135,6 +140,7 @@ class Graph:
         asymptomatic = [ person_id for person_id in self.adjacency_list.keys() if self.adjacency_list[person_id].before_symptomatic >= 0]
         quarantined = [ person_id for person_id in self.adjacency_list.keys() if self.adjacency_list[person_id].before_symptomatic == -2]
 
+        print("day " + str(self.day))
         print("healthy: " + str(len(healthy)))
         print("asymptomatic: " + str(len(asymptomatic)))
         print("quarantined: " + str(len(quarantined)))
@@ -151,8 +157,11 @@ class Graph:
         return len([ person_id for person_id in self.adjacency_list.keys() if self.adjacency_list[person_id].before_symptomatic == -2])
 
 
-
-    """
-    def dynamic_test(self, people_to_test):
-        return discovered_positives
-    """
+    # dynamic test a list of people_ids
+    def dynamic_test(self, ids_to_test):
+        for id in ids_to_test:
+            person = self.adjacency_list[id]
+            if person.get_tested():
+                print(str(id) + " tested positive and quarantined")
+            else:
+                print(str(id) + " tested negative")
