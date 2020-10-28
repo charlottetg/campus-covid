@@ -4,6 +4,7 @@ import scipy
 import random
 from random import choice
 import numpy as np
+import math as math
 
 class Person:
 
@@ -24,7 +25,7 @@ class Person:
 
         # randomly sample from disrubtion to get # time steps before symptomatic
         if (self.before_symptomatic == -1):
-            self.before_symptomatic = np.random.normal(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
+            self.before_symptomatic = math.floor(np.random.normal(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC))
 
     def get_tested(self):
         if (self.before_symptomatic >= 0 ): # asymptomatic
@@ -72,8 +73,8 @@ class Graph:
         # nodes
         nx.draw_networkx_nodes(g, pos, nodelist= healthy, node_size=250, node_color="green")
         nx.draw_networkx_nodes(g, pos, nodelist= asymptomatic, node_size=250, node_color="red")
-        nx.draw_networkx_nodes(g, pos, nodelist= quarantined, node_size=250, node_color="black")
         nx.draw_networkx_nodes(g, pos, nodelist= patient_zero, node_size=250, node_color="purple")
+        nx.draw_networkx_nodes(g, pos, nodelist= quarantined, node_size=250, node_color="blue")
 
         # labels
         nx.draw_networkx_labels(g, pos, labels, font_size = 16)
@@ -91,30 +92,30 @@ class Graph:
         plt.show()
 
 
-    # to be called on self and an asymptomatic people: probabalistically gives covid to their contacts
-    def individual_spread(self, spreader):
-        for contact in spreader.contacts:
+    # to be called on self and an asymptomatic person: probabalistically gives covid to their contacts
+    def individual_spread(self, spreader_id):
+        for contact in self.adjacency_list[spreader_id].contacts:
             if self.adjacency_list[contact[0]].before_symptomatic == -1: # healthy, susceptible
                 transmission_prob = contact[1]
 
                 # if edge is traveled
                 if random.choices([True, False], weights = [transmission_prob, (1 - transmission_prob)])[0]: # returns a list with one element
                     self.adjacency_list[contact[0]].get_covid()
-                    print(str(contact[0]) + " got covid")
-                    print("edge weight was " + str(contact[1]))
+                    print(str(contact[0]) + " got covid from " + str(spreader_id))
 
 
     # what happens to the graph every time step
     def graph_spread(self):
-
-        # make a list of people who start off asymptomatic
+        # make a list of people ids who start off asymptomatic
         current_spreaders = []
-        for person in self.adjacency_list.values():
-            if person.before_symptomatic >= 0: # asymptomatic
-                person.before_symptomatic -= 1 # decrease by 1
-                current_spreaders.append(person)
-            if person.before_symptomatic == 0: # now showing symptoms
-                person.before_symptomatic = -2 # quarantine (still spread this time step, but not after)
+        for person_id in self.adjacency_list.keys():
+            if self.adjacency_list[person_id].before_symptomatic >= 0: # asymptomatic
+                self.adjacency_list[person_id].before_symptomatic -= 1 # decrease by 1
+                current_spreaders.append(person_id)
+
+            if self.adjacency_list[person_id].before_symptomatic == 0: # now showing symptoms
+                self.adjacency_list[person_id].before_symptomatic = -2 # quarantine (still spread this time step, but not after)
+                print(str(person_id) + " showed symptoms and quarantined")
 
         for spreader in current_spreaders:
             self.individual_spread(spreader)
@@ -128,7 +129,7 @@ class Graph:
             print("person " + str(person_id) + " :" + str(self.adjacency_list[person_id].contacts))
 
 
-    # also for testing
+    # also for testing (redundant with next functions)
     def print_stats(self):
         healthy = [ person_id for person_id in self.adjacency_list.keys() if self.adjacency_list[person_id].before_symptomatic == -1]
         asymptomatic = [ person_id for person_id in self.adjacency_list.keys() if self.adjacency_list[person_id].before_symptomatic >= 0]
@@ -138,6 +139,16 @@ class Graph:
         print("asymptomatic: " + str(len(asymptomatic)))
         print("quarantined: " + str(len(quarantined)))
         print("\n")
+
+
+    def num_healthy(self):
+        return len([ person_id for person_id in self.adjacency_list.keys() if self.adjacency_list[person_id].before_symptomatic == -1])
+
+    def num_asymptomatic(self):
+        return len([ person_id for person_id in self.adjacency_list.keys() if self.adjacency_list[person_id].before_symptomatic >= 0])
+
+    def num_quarantined(self):
+        return len([ person_id for person_id in self.adjacency_list.keys() if self.adjacency_list[person_id].before_symptomatic == -2])
 
 
 
