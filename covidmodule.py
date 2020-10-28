@@ -78,10 +78,8 @@ class Graph:
         # labels
         nx.draw_networkx_labels(g, pos, labels, font_size = 16)
 
-        # make edges
+        # make edges (something up here)
         close_contacts = [(u, v) for (u, v, d) in g.edges(data=True) if d["weight"] == PROB_CLOSE]
-        print(close_contacts)
-
         tang_contacts = [(u, v) for (u, v, d) in g.edges(data=True) if d["weight"] == PROB_TANG]
         dangerous_contacts = [(u, v) for (u, v, d) in g.edges(data=True) if people_map[u].before_symptomatic >= 0 or people_map[v].before_symptomatic >= 0]
 
@@ -89,10 +87,6 @@ class Graph:
         nx.draw_networkx_edges(g, pos, edgelist= tang_contacts, width=1)
         nx.draw_networkx_edges(g, pos, edgelist= close_contacts, width=2)
         nx.draw_networkx_edges(g, pos, edgelist = dangerous_contacts, width=1, edge_color="red")
-
-        print("healthy: " + str(len(healthy)))
-        print("asymptomatic: " + str(len(asymptomatic)))
-        print("quarantined: " + str(len(quarantined)))
 
         plt.show()
 
@@ -106,6 +100,8 @@ class Graph:
                 # if edge is traveled
                 if random.choices([True, False], weights = [transmission_prob, (1 - transmission_prob)])[0]: # returns a list with one element
                     self.adjacency_list[contact[0]].get_covid()
+                    print(str(contact[0]) + " got covid")
+                    print("edge weight was " + str(contact[1]))
 
 
     # what happens to the graph every time step
@@ -122,6 +118,27 @@ class Graph:
 
         for spreader in current_spreaders:
             self.individual_spread(spreader)
+
+    # for testing
+    def print_contacts_info(self):
+        people_map = self.adjacency_list
+        people_ids = people_map.keys()
+
+        for person_id in self.adjacency_list.keys():
+            print("person " + str(person_id) + " :" + str(self.adjacency_list[person_id].contacts))
+
+
+    # also for testing
+    def print_stats(self):
+        healthy = [ person_id for person_id in self.adjacency_list.keys() if self.adjacency_list[person_id].before_symptomatic == -1]
+        asymptomatic = [ person_id for person_id in self.adjacency_list.keys() if self.adjacency_list[person_id].before_symptomatic >= 0]
+        quarantined = [ person_id for person_id in self.adjacency_list.keys() if self.adjacency_list[person_id].before_symptomatic == -2]
+
+        print("healthy: " + str(len(healthy)))
+        print("asymptomatic: " + str(len(asymptomatic)))
+        print("quarantined: " + str(len(quarantined)))
+        print("\n")
+
 
 
     """
