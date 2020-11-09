@@ -1,12 +1,9 @@
-import networkx as nx
-import matplotlib.pyplot as plt
-import scipy
-import random
-from random import choice
-import numpy as np
 
-from covidmodule import Person
-from covidmodule import Graph
+import random
+
+
+from Person import Person
+from Graph import Graph
 
 # graph constants
 NUM_STUDENTS = 10
