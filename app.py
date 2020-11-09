@@ -38,7 +38,7 @@ def graph_from_data(students, close, tang, prob_close, prob_tang, mean_symptomat
             if current_id not in social_ids_dict.keys():
                 social_ids_dict[current_id] = Person({})
 
-            for j in range(len(row)):
+            for j in range(1, len(row)):
 
                 if not pd.isnull(row[j]):
 
