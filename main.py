@@ -4,15 +4,13 @@ import random
 from random import choice
 import numpy as np
 import pandas as pd
+import networkx as nx
 
 from Person import Person
 from Graph import Graph
 
 # constants
-NUM_STUDENTS = 10
-NUM_CLOSE = 2
-NUM_TANG = 1
-NUM_STUDENTS = 157
+NUM_STUDENTS = 443
 NUM_CLOSE = 4
 NUM_TANG = 10
 PROB_CLOSE = .174
@@ -55,7 +53,12 @@ social_graph.ids_dict[1].patient_zero = True
 
 print(len(social_graph.ids_dict))
 
+# originally in show_graph (to keep pos consistent)
+social_pos = nx.spring_layout(social_graph.networkx_graph())
+social_graph.show_graph(PROB_CLOSE, PROB_TANG, social_graph.networkx_graph(), social_pos)
 
+
+"""
 # create graph with random close + tang contacts
 random_graph = Graph({})
 random_graph.add_contacts(NUM_CLOSE, PROB_CLOSE, NUM_STUDENTS)
@@ -63,22 +66,26 @@ random_graph.add_contacts(NUM_TANG, PROB_TANG, NUM_STUDENTS)
 random_graph.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  # give one person covid
 random_graph.ids_dict[1].patient_zero = True
 
+# originally in show_graph (to keep pos consistent)
+random_pos = nx.spring_layout(random_graph.networkx_graph())
+random_graph.show_graph(PROB_CLOSE, PROB_TANG, random_graph.networkx_graph(), random_pos)
 """
+
 # one week
 for i in range(7):
-    # random_graph.graph_spread(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
-    social_graph.graph_spread(mean_symptomatic, standard_dev_symptomatic)
+    #random_graph.graph_spread(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
+    social_graph.graph_spread(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
 
-    people_to_test = random.sample(list(range(1, students)), round(students / 21))
+    people_to_test = random.sample(list(range(1, NUM_STUDENTS)), round(NUM_STUDENTS / 21))
 
-    # random_graph.dynamic_test(people_to_test)
+    #random_graph.dynamic_test(people_to_test)
     social_graph.dynamic_test(people_to_test)
 
-# random_graph.show_graph(PROB_CLOSE, PROB_TANG)
-# random_graph.print_stats()
-# random_graph.print_contacts_info()
-"""
 
-#social_graph.show_graph(PROB_CLOSE, PROB_TANG) #we don't want to use nx in the back end
-#social_graph.print_stats()
-social_graph.print_contacts_info()
+#random_graph.show_graph(PROB_CLOSE, PROB_TANG, random_graph.networkx_graph(), random_pos)
+#random_graph.print_stats()
+#random_graph.print_contacts_info()
+
+social_graph.show_graph(PROB_CLOSE, PROB_TANG, social_graph.networkx_graph(), social_pos) #we don't want to use nx in the back end
+social_graph.print_stats()
+#social_graph.print_contacts_info()

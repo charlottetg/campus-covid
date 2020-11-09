@@ -13,10 +13,9 @@ class Graph:
         self.ids_dict = ids_dict
         self.day = 0
 
-
-    # display graph using networkx
-    def show_graph(self, prob_close, prob_tang):
-
+    # used to be in show_graph
+    def networkx_graph(self):
+        ids_dict = self.ids_dict
         g = nx.Graph()
         people_map = self.ids_dict
         people_ids = people_map.keys()
@@ -32,22 +31,31 @@ class Graph:
             current_contacts = people_map[person_id].contacts
             for contact in current_contacts:
                 g.add_edge(person_id, contact, weight = current_contacts[contact])
+        return g
+
+
+    # display graph using networkx
+    # g is networkx graph
+    def show_graph(self, prob_close, prob_tang, g, pos):
+
+        people_map = self.ids_dict
 
         healthy = [person_id for person_id in g.nodes() if people_map[person_id].state == -1]
         asymptomatic = [person_id for person_id in g.nodes() if people_map[person_id].state >= 0]
         quarantined = [person_id for person_id in g.nodes() if people_map[person_id].state == -2]
         patient_zero = [ person_id for person_id in g.nodes() if people_map[person_id].patient_zero]
 
-        pos = nx.circular_layout(g)  # positions for all nodes
+        #pos = nx.circular_layout(g)  # positions for all nodes
+        #pos = nx.spring_layout(g)
 
         # nodes
-        nx.draw_networkx_nodes(g, pos, nodelist= healthy, node_size=250, node_color="green")
-        nx.draw_networkx_nodes(g, pos, nodelist= asymptomatic, node_size=250, node_color="red")
-        nx.draw_networkx_nodes(g, pos, nodelist= patient_zero, node_size=250, node_color="purple")
-        nx.draw_networkx_nodes(g, pos, nodelist= quarantined, node_size=250, node_color="blue")
+        nx.draw_networkx_nodes(g, pos, nodelist= healthy, node_size=20, node_color="green")
+        nx.draw_networkx_nodes(g, pos, nodelist= asymptomatic, node_size=20, node_color="red")
+        nx.draw_networkx_nodes(g, pos, nodelist= patient_zero, node_size=20, node_color="purple")
+        nx.draw_networkx_nodes(g, pos, nodelist= quarantined, node_size=20, node_color="blue")
 
         # labels
-        nx.draw_networkx_labels(g, pos, labels, font_size = 16)
+        #nx.draw_networkx_labels(g, pos, labels, font_size = 16)
 
         # make edges (something up here)
         close_contacts = [(u, v) for (u, v, d) in g.edges(data=True) if d["weight"] == prob_close]
@@ -55,9 +63,9 @@ class Graph:
         dangerous_contacts = [(u, v) for (u, v, d) in g.edges(data=True) if people_map[u].state >= 0 or people_map[v].state >= 0]
 
         # draw edges
-        nx.draw_networkx_edges(g, pos, edgelist= tang_contacts, width=1)
-        nx.draw_networkx_edges(g, pos, edgelist= close_contacts, width=2)
-        nx.draw_networkx_edges(g, pos, edgelist = dangerous_contacts, width=1, edge_color="red")
+        #nx.draw_networkx_edges(g, pos, edgelist= tang_contacts, width=.5)
+        nx.draw_networkx_edges(g, pos, edgelist= close_contacts, width=1)
+        #nx.draw_networkx_edges(g, pos, edgelist = dangerous_contacts, width=1, edge_color="red")
 
         plt.show()
 
