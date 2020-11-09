@@ -13,7 +13,7 @@ class Person:
 
         # how many days before a person is symptomatic:
         # this encodes their state (-1 = healthy, >= 0 = asymptomatic, -2 = quarantined)
-        self.before_symptomatic = -1
+        self.state = -1
 
         self.patient_zero = False # can take this out later
 
@@ -24,11 +24,11 @@ class Person:
         STANDARD_DEV_SYMPTOMATIC = 1.2 # can change this later
 
         # randomly sample from disrubtion to get # time steps before symptomatic
-        if (self.before_symptomatic == -1):
-            self.before_symptomatic = math.floor(np.random.normal(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC))
+        if (self.state == -1):
+            self.state = math.floor(np.random.normal(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC))
 
     # returns true if self has it
     def get_tested(self):
-        if (self.before_symptomatic >= 0 ): # asymptomatic
-            self.before_symptomatic = -2
+        if (self.state >= 0): # asymptomatic
+            self.state = -2
             return True # I think this is a weird structure
