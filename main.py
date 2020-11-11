@@ -1,18 +1,18 @@
 # for testing
 
 import random
-from random import choice
-import numpy as np
 import pandas as pd
 import networkx as nx
 
 from Person import Person
 from Graph import Graph
 
-# constants
-NUM_STUDENTS = 443
-NUM_CLOSE = 4
-NUM_TANG = 10
+# var
+num_students = 443
+num_close = 4
+num_tang = 10
+
+#constants
 PROB_CLOSE = .174
 PROB_TANG = .031
 MEAN_SYMPTOMATIC = 6
@@ -61,8 +61,8 @@ social_graph.show_graph(PROB_CLOSE, PROB_TANG, social_graph.networkx_graph(), so
 """
 # create graph with random close + tang contacts
 random_graph = Graph({})
-random_graph.add_contacts(NUM_CLOSE, PROB_CLOSE, NUM_STUDENTS)
-random_graph.add_contacts(NUM_TANG, PROB_TANG, NUM_STUDENTS)
+random_graph.add_contacts(NUM_CLOSE, PROB_CLOSE, num_students)
+random_graph.add_contacts(NUM_TANG, PROB_TANG, num_students)
 random_graph.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  # give one person covid
 random_graph.ids_dict[1].patient_zero = True
 
@@ -76,7 +76,7 @@ for i in range(7):
     #random_graph.graph_spread(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
     social_graph.graph_spread(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
 
-    people_to_test = random.sample(list(range(1, NUM_STUDENTS)), round(NUM_STUDENTS / 21))
+    people_to_test = random.sample(list(range(1, num_students)), round(num_students / 21))
 
     #random_graph.dynamic_test(people_to_test)
     social_graph.dynamic_test(people_to_test)
