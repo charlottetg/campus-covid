@@ -24,5 +24,10 @@ def testing():
 def time(day):
     return "it is now day: " + day
 
+
+
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)
