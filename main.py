@@ -8,9 +8,9 @@ from Person import Person
 from Graph import Graph
 
 # var
-num_students = 443
-num_close = 4
-num_tang = 10
+num_students = 10
+num_close = 1
+num_tang = 2
 
 #constants
 PROB_CLOSE = .174
@@ -18,7 +18,7 @@ PROB_TANG = .031
 MEAN_SYMPTOMATIC = 6
 STANDARD_DEV_SYMPTOMATIC = 1.2
 
-
+"""
 social_ids_dict = {}
 df = pd.read_excel('anonymous_classnetwork.xlsx')
 
@@ -51,54 +51,58 @@ social_graph = Graph(social_ids_dict)
 social_graph.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  # give one person covid
 social_graph.ids_dict[1].patient_zero = True
 
-"""
 # originally in show_graph (to keep pos consistent)
 social_pos = nx.spring_layout(social_graph.networkx_graph())
 social_graph.show_graph(PROB_CLOSE, PROB_TANG, social_graph.networkx_graph(), social_pos)
+"""
 
 # create graph with random close + tang contacts
 random_graph = Graph({})
-random_graph.add_contacts(NUM_CLOSE, PROB_CLOSE, num_students)
-random_graph.add_contacts(NUM_TANG, PROB_TANG, num_students)
+random_graph.add_contacts(num_close, PROB_CLOSE, num_students)
+random_graph.add_contacts(num_tang, PROB_TANG, num_students)
 random_graph.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  # give one person covid
 random_graph.ids_dict[1].patient_zero = True
 
 # originally in show_graph (to keep pos consistent)
 random_pos = nx.spring_layout(random_graph.networkx_graph())
-random_graph.show_graph(PROB_CLOSE, PROB_TANG, random_graph.networkx_graph(), random_pos)
 
+"""
 # one week
 for i in range(7):
-    #random_graph.graph_spread(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
-    social_graph.graph_spread(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
+    random_graph.graph_spread(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
+    #social_graph.graph_spread(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
 
     people_to_test = random.sample(list(range(1, num_students)), round(num_students / 21))
 
-    #random_graph.dynamic_test(people_to_test)
-    social_graph.dynamic_test(people_to_test)
-
+    random_graph.dynamic_test(people_to_test)
+    #social_graph.dynamic_test(people_to_test)
+"""
 
 #random_graph.show_graph(PROB_CLOSE, PROB_TANG, random_graph.networkx_graph(), random_pos)
 #random_graph.print_stats()
 #random_graph.print_contacts_info()
 
-social_graph.show_graph(PROB_CLOSE, PROB_TANG, social_graph.networkx_graph(), social_pos) #we don't want to use nx in the back end
-social_graph.print_stats()
+#social_graph.show_graph(PROB_CLOSE, PROB_TANG, social_graph.networkx_graph(), social_pos) #we don't want to use nx in the back end
+#social_graph.print_stats()
 #social_graph.print_contacts_info()
-"""
 
-# returns an array of population [healthy, asymptomatic, quarantined] for each day
+
+# returns an array of graphs and an array of population [healthy, asymptomatic, quarantined] for each day
 # if num_runs > 1, these stats are an average
-def run_stats(graph, num_runs, days, fraction_tests_per_day, mean_symptomatic, standard_dev_symptomatic):
+def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptomatic, standard_dev_symptomatic):
     healthy = [0] * days
     asymptomatic = [0] * days
     quarantined = [0] * days
 
+    graphs = []
+
     for i in range(num_runs):
         for j in range(days):
             graph.graph_spread(mean_symptomatic, standard_dev_symptomatic)
-            people_to_test = random.sample(list(range(1, num_students)), round(num_students / fraction_tests_per_day))
+            people_to_test = random.sample(list(range(1, num_students)), round(num_students / fraction_tested_per_day))
             graph.dynamic_test(people_to_test)
+
+            graphs.append(graph)
 
             healthy[j] += graph.num_healthy()
             asymptomatic[j] += graph.num_asymptomatic()
@@ -108,7 +112,11 @@ def run_stats(graph, num_runs, days, fraction_tests_per_day, mean_symptomatic, s
     averaged_asymptomatic = [ x / num_runs for x in asymptomatic]
     averaged_quarantined = [ x / num_runs for x in quarantined]
 
-    return [averaged_healthy, averaged_asymptomatic, averaged_quarantined]
+    stats = [averaged_healthy, averaged_asymptomatic, averaged_quarantined]
 
-print(social_graph.print_stats())
-print(run_stats(social_graph, 1, 2, 21, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC))
+    return graphs, stats
+
+results = run_simulation(random_graph, 1, 3, 5, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
+
+for graph in results[0]:
+    graph.show_graph(PROB_CLOSE, PROB_TANG, random_graph.networkx_graph(), random_pos)

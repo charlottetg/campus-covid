@@ -45,9 +45,6 @@ class Graph:
         quarantined = [person_id for person_id in g.nodes() if people_map[person_id].state == -2]
         patient_zero = [ person_id for person_id in g.nodes() if people_map[person_id].patient_zero]
 
-        #pos = nx.circular_layout(g)  # positions for all nodes
-        #pos = nx.spring_layout(g)
-
         # nodes
         nx.draw_networkx_nodes(g, pos, nodelist= healthy, node_size=20, node_color="green")
         nx.draw_networkx_nodes(g, pos, nodelist= asymptomatic, node_size=20, node_color="red")
@@ -64,7 +61,7 @@ class Graph:
 
         # draw edges
         #nx.draw_networkx_edges(g, pos, edgelist= tang_contacts, width=.5)
-        nx.draw_networkx_edges(g, pos, edgelist= close_contacts, width=1)
+        #nx.draw_networkx_edges(g, pos, edgelist= close_contacts, width=1)
         #nx.draw_networkx_edges(g, pos, edgelist = dangerous_contacts, width=1, edge_color="red")
 
         plt.show()
