@@ -1,9 +1,13 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from Person import Person
 from Graph import Graph
 import pandas as pd
 import random
 app = Flask(__name__)
+
+@app.route("/")
+def testin():
+    return render_template('hello.html')
 
 @app.route("/<id>")
 def persondata(id):
@@ -13,12 +17,6 @@ def persondata(id):
         return "person " + id + " is healthy!"
     else:
         return jsonify(p.contacts)
-
-@app.route("/")
-def testing():
-    #g = graph_from_data(10, 1, 2, .174, .031, 6, 1.2)
-    #print(g)
-    return ""
 
 @app.route("/<day>")
 def time(day):
