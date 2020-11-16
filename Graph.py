@@ -12,10 +12,12 @@ class Graph:
     def __init__(self, ids_dict):
         self.ids_dict = ids_dict
         self.day = 0
-        self.log = [] # keep track of what happens (to print)
+        self.log = [] # keep track of what happens to individuals in graph
 
-    # used to be in show_graph
     def networkx_graph(self):
+        """
+        Given a graph object, create a Networkx graph (so that we can show graph)
+        """
         ids_dict = self.ids_dict
         g = nx.Graph()
         people_map = self.ids_dict
@@ -25,7 +27,7 @@ class Graph:
         labels = {}
         for person_id in people_ids:
             g.add_node(person_id)
-            labels[person_id] = person_id # this is silly, take out later
+            labels[person_id] = person_id
 
         # edges
         for person_id in people_ids:
@@ -35,9 +37,10 @@ class Graph:
         return g
 
 
-    # display graph using networkx
-    # g is networkx graph
     def show_graph(self, prob_close, prob_tang, g, pos):
+        """
+        Display a Networkx graph (g is Networkx graph)
+        """
 
         people_map = self.ids_dict
 
@@ -68,8 +71,11 @@ class Graph:
         plt.show()
 
 
-    # to be called on self and an asymptomatic person: probabalistically gives covid to their contacts
     def individual_spread(self, spreader_id, mean_symptomatic, standard_dev_symptomatic):
+        """
+        To be called on graph and an asymptomatic person; probabalistically gives covid to their contacts
+
+        """
         contacts = self.ids_dict[spreader_id].contacts
         for person_id in contacts:
             if self.ids_dict[person_id].state == -1: # healthy, susceptible
@@ -81,8 +87,10 @@ class Graph:
                     self.log.append(str(person_id) + " got covid from " + str(spreader_id))
 
 
-    # what happens to the graph every time step
     def graph_spread(self, mean_symptomatic, standard_dev_symptomatic):
+        """
+        To be called on a graph every time step: increment day, spread covid from infected individuals
+        """
 
         self.log.append("day " + str(self.day))
         # make a list of people ids who start off asymptomatic
@@ -102,28 +110,6 @@ class Graph:
         # keep track of day
         self.day += 1
 
-    # for testing
-    def print_contacts_info(self):
-        people_map = self.ids_dict
-        people_ids = people_map.keys()
-
-        for person_id in self.ids_dict.keys():
-            print("person " + str(person_id) + " :" + str(self.ids_dict[person_id].contacts))
-
-
-    # also for testing (redundant with next functions)
-    def print_stats(self):
-        healthy = [person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state == -1]
-        asymptomatic = [person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state >= 0]
-        quarantined = [person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state == -2]
-
-        print("day " + str(self.day))
-        print("healthy: " + str(len(healthy)))
-        print("asymptomatic: " + str(len(asymptomatic)))
-        print("quarantined: " + str(len(quarantined)))
-        print("\n")
-
-
     def num_healthy(self):
         return len([person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state == -1])
 
@@ -134,8 +120,10 @@ class Graph:
         return len([person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state == -2])
 
 
-    # dynamic test a list of people_ids
     def dynamic_test(self, ids_to_test):
+        """
+        Test a list of people IDs, contact trace if a positive case is found
+        """
         for id in ids_to_test:
             person = self.ids_dict[id]
             if person.get_tested():
@@ -150,9 +138,12 @@ class Graph:
 
 
     def add_contacts(self, num_contacts, prob_contacts, num_students):
+        """
+        Add contacts (with a given probabilty) to a graph such that contacts are mutual
+        """
 
         ids_dict = self.ids_dict
-        num_chosen = {}  # keep track of how many added for each students (needed?)
+        num_chosen = {}  # keep track of how many added for each students
         at_contacts_max = set()
 
         for i in range(1, num_students + 1):  # for all of the students
@@ -171,7 +162,7 @@ class Graph:
             if contacts_remaining > 0:
 
                 if len(
-                        contact_options) < contacts_remaining:  # math doesn't work out, but still need to add more contacts!
+                        contact_options) < contacts_remaining:  # math doesn't work out, but still need to add more contacts
                     all_contact_options = set(range(1, num_students + 1)) - {i} - set(ids_dict[i].contacts.keys())
                     chosen_contacts = random.sample(list(all_contact_options), contacts_remaining)
 
@@ -181,7 +172,7 @@ class Graph:
                 num_chosen[i] += contacts_remaining  # increment count for i
 
                 # add contact and probability for current person
-                # also make current person the contact of all chosen contacts
+                # make current person the contact of all chosen contacts
                 # check if either current person or contact now have max number of contacts
                 for contact in chosen_contacts:
                     ids_dict[i].contacts[contact] = prob_contacts
@@ -200,3 +191,25 @@ class Graph:
 
                     if num_chosen[i] == num_contacts:  # at max
                         at_contacts_max.add(contact)
+
+
+    # for testing purposes
+    def print_contacts_info(self):
+        people_map = self.ids_dict
+        people_ids = people_map.keys()
+
+        for person_id in self.ids_dict.keys():
+            print("person " + str(person_id) + " :" + str(self.ids_dict[person_id].contacts))
+
+
+    # for testing purposes
+    def print_stats(self):
+        healthy = [person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state == -1]
+        asymptomatic = [person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state >= 0]
+        quarantined = [person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state == -2]
+
+        print("day " + str(self.day))
+        print("healthy: " + str(len(healthy)))
+        print("asymptomatic: " + str(len(asymptomatic)))
+        print("quarantined: " + str(len(quarantined)))
+        print("\n")

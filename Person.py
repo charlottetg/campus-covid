@@ -4,10 +4,9 @@ import math as math
 class Person:
 
     def __init__(self, contacts):
-        self.contacts = contacts # this is a dictionary with friends as keys
+        self.contacts = contacts # dictionary with friends as keys
 
-        # how many days before a person is symptomatic:
-        # this encodes their state (-1 = healthy, >= 0 = asymptomatic, -2 = quarantined)
+        # this encodes their state (-1 = healthy, >= 0 = asymptomatic (how many days before symptomatic), -2 = quarantined)
         self.state = -1
 
         self.patient_zero = False # can take this out later
@@ -18,7 +17,7 @@ class Person:
         if (self.state == -1):
             self.state = math.floor(np.random.normal(mean_symptomatic, standard_dev_symptomatic))
 
-    # returns true if self has it
+    # return true if person is asymptomatic
     def get_tested(self):
         if (self.state >= 0): # asymptomatic
             self.state = -2

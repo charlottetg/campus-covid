@@ -25,7 +25,5 @@ def time(day):
 
 
 
-
-
 if __name__ == "__main__":
     app.run(debug=True)
