@@ -3,14 +3,15 @@
 import random
 import pandas as pd
 import networkx as nx
+import copy as copy
 
 from Person import Person
 from Graph import Graph
 
 # var
-num_students = 10
-num_close = 1
-num_tang = 2
+num_students = 20
+num_close = 4
+num_tang = 10
 
 #constants
 PROB_CLOSE = .174
@@ -102,7 +103,9 @@ def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptoma
             people_to_test = random.sample(list(range(1, num_students)), round(num_students / fraction_tested_per_day))
             graph.dynamic_test(people_to_test)
 
-            graphs.append(graph)
+            current_graph = copy.copy(graph)
+            #print(current_graph.print_stats())
+            graphs.append(current_graph)
 
             healthy[j] += graph.num_healthy()
             asymptomatic[j] += graph.num_asymptomatic()
@@ -116,7 +119,8 @@ def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptoma
 
     return graphs, stats
 
-results = run_simulation(random_graph, 1, 3, 5, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
+results = run_simulation(random_graph, 1, 3, 20, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
+print(results[0][0].log)
 
-for graph in results[0]:
-    graph.show_graph(PROB_CLOSE, PROB_TANG, random_graph.networkx_graph(), random_pos)
+#for graph in results[0]:
+#    graph.show_graph(PROB_CLOSE, PROB_TANG, random_graph.networkx_graph(), random_pos)

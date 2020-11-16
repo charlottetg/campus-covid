@@ -12,6 +12,7 @@ class Graph:
     def __init__(self, ids_dict):
         self.ids_dict = ids_dict
         self.day = 0
+        self.log = [] # keep track of what happens (to print)
 
     # used to be in show_graph
     def networkx_graph(self):
@@ -78,13 +79,12 @@ class Graph:
                 # if edge is traveled
                 if random.choices([True, False], weights = [transmission_prob, (1 - transmission_prob)])[0]: # returns a list with one element
                     self.ids_dict[person_id].get_covid(mean_symptomatic, standard_dev_symptomatic)
-                    print(str(person_id) + " got covid from " + str(spreader_id))
-
+                    self.log.append(str(person_id) + " got covid from " + str(spreader_id))
 
     # what happens to the graph every time step
     def graph_spread(self, mean_symptomatic, standard_dev_symptomatic):
 
-        print("day " + str(self.day))
+        self.log.append("day " + str(self.day))
         # make a list of people ids who start off asymptomatic
         current_spreaders = []
         for person_id in self.ids_dict:
@@ -94,7 +94,7 @@ class Graph:
 
             if self.ids_dict[person_id].state == 0: # now showing symptoms
                 self.ids_dict[person_id].state = -2 # quarantine (still spread this time step, but not after)
-                print(str(person_id) + " showed symptoms and quarantined")
+                self.log.append(str(person_id) + " showed symptoms and quarantined")
 
         for spreader in current_spreaders:
             self.individual_spread(spreader, mean_symptomatic, standard_dev_symptomatic)
@@ -139,9 +139,10 @@ class Graph:
         for id in ids_to_test:
             person = self.ids_dict[id]
             if person.get_tested():
-                print(str(id) + " tested positive and quarantined")
+                self.log.append(str(id) + " tested positive and quarantined")
             else:
-                print(str(id) + " tested negative")
+                self.log.append(str(id) + " tested negative")
+
 
     def add_contacts(self, num_contacts, prob_contacts, num_students):
 
