@@ -68,7 +68,6 @@ class Graph:
         plt.show()
 
 
-
     # to be called on self and an asymptomatic person: probabalistically gives covid to their contacts
     def individual_spread(self, spreader_id, mean_symptomatic, standard_dev_symptomatic):
         contacts = self.ids_dict[spreader_id].contacts
@@ -80,6 +79,7 @@ class Graph:
                 if random.choices([True, False], weights = [transmission_prob, (1 - transmission_prob)])[0]: # returns a list with one element
                     self.ids_dict[person_id].get_covid(mean_symptomatic, standard_dev_symptomatic)
                     self.log.append(str(person_id) + " got covid from " + str(spreader_id))
+
 
     # what happens to the graph every time step
     def graph_spread(self, mean_symptomatic, standard_dev_symptomatic):
@@ -140,6 +140,11 @@ class Graph:
             person = self.ids_dict[id]
             if person.get_tested():
                 self.log.append(str(id) + " tested positive and quarantined")
+
+                for contact_id in person.contacts:
+                    self.ids_dict[contact_id].state = -2 # contact tracing; send to quarantine
+                    self.log.append(str(contact_id) + " contact traced and quarantined")
+
             else:
                 self.log.append(str(id) + " tested negative")
 
