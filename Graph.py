@@ -120,9 +120,10 @@ class Graph:
         return len([person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state == -2])
 
 
-    def dynamic_test(self, ids_to_test):
+    def dynamic_test(self, ids_to_test, all_contacts, prob_close):
         """
         Test a list of people IDs, contact trace if a positive case is found
+        all_contacts is a Boolean: if true, also contact trace tang contacts
         """
         for id in ids_to_test:
             person = self.ids_dict[id]
@@ -130,8 +131,13 @@ class Graph:
                 self.log.append(str(id) + " tested positive and quarantined")
 
                 for contact_id in person.contacts:
-                    self.ids_dict[contact_id].state = -2 # contact tracing; send to quarantine
-                    self.log.append(str(contact_id) + " contact traced and quarantined")
+                    if all_contacts: # contact trace tang contacts as well
+                        self.ids_dict[contact_id].state = -2 # contact tracing; send to quarantine
+                        self.log.append(str(contact_id) + " contact traced and quarantined")
+                    else:
+                        if person.contacts[contact_id] == prob_close:
+                            self.ids_dict[contact_id].state = -2 # contact tracing; send to quarantine
+                            self.log.append(str(contact_id) + " contact traced and quarantined")
 
             else:
                 self.log.append(str(id) + " tested negative")

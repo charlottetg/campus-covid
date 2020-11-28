@@ -64,12 +64,14 @@ random_graph.ids_dict[1].patient_zero = True
 random_pos = nx.spring_layout(random_graph.networkx_graph())
 
 
-def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptomatic, standard_dev_symptomatic):
+def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptomatic, standard_dev_symptomatic, all_contacts):
     """
     Runs a simulated spread, returns [graphs, single_stats, average_stats]
     graphs is array of graphs for each day of the simulation *for the first run*
     single_stats is a 2D array of population [healthy, asymptomatic, quarantined] for each day *for the first run*
     average_stats is a 2D array of population [healthy, asymptomatic, quarantined] for each day *on average*
+
+    note: all contacts is a Boolean
     """
 
     healthy = [0] * days
@@ -84,7 +86,7 @@ def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptoma
         for j in range(days):
             current_run_graph.graph_spread(mean_symptomatic, standard_dev_symptomatic)
             people_to_test = random.sample(list(range(1, num_students)), round(num_students / fraction_tested_per_day))
-            current_run_graph.dynamic_test(people_to_test)
+            current_run_graph.dynamic_test(people_to_test, all_contacts, PROB_CLOSE)
 
             healthy[j] += current_run_graph.num_healthy()
             asymptomatic[j] += current_run_graph.num_asymptomatic()
@@ -106,7 +108,7 @@ def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptoma
     return graphs, single_stats, average_stats
 
 
-results = run_simulation(random_graph, 2, 3, 20, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
+results = run_simulation(random_graph, 2, 3, 20, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC, False)
 graphs = results[0]
 single_stats = results[1]
 average_stats = results[2]
