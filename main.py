@@ -10,7 +10,7 @@ from Person import Person
 from Graph import Graph
 
 # var
-num_students = 2275
+num_students = 100
 num_close = 4
 num_tang = 5
 
@@ -122,7 +122,7 @@ def get_stats(healthy, asymptomatic, quarantined):
 
 
 days = 7
-runs = 1000
+runs = 1
 fraction_tested_per_day = 7
 results = run_simulation(random_graph, runs, days, fraction_tested_per_day, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC, False)
 
@@ -136,15 +136,15 @@ healthy = results[1]
 asymptomatic = results[2]
 quarantined = results[3]
 
-np.savetxt('full_healthy.csv', np.array(healthy))
-np.savetxt('full_asymptomatic.csv', np.array(asymptomatic))
-np.savetxt('full_quarantined.csv', np.array(quarantined))
+np.savetxt('full_healthy.csv', np.array(healthy), delimiter=',')
+np.savetxt('full_asymptomatic.csv', np.array(asymptomatic), delimiter=',')
+np.savetxt('full_quarantined.csv', np.array(quarantined), delimiter=',')
 
 stats = get_stats(healthy, asymptomatic, quarantined)
 graph_stats = stats[0]
 average_stats = stats[1]
 standard_devs = stats[2]
 
-np.savetxt('graph_stats.csv', graph_stats)
-np.savetxt('average_stats.csv', average_stats)
-np.savetxt('standard_devs.csv', standard_devs)
+np.savetxt('graph_stats.csv', graph_stats, delimiter=',')
+np.savetxt('average_stats.csv', average_stats, delimiter=',')
+np.savetxt('standard_devs.csv', standard_devs, delimiter=',')
