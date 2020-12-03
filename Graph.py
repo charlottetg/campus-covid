@@ -37,11 +37,12 @@ class Graph:
         return g
 
 
-    def show_graph(self, prob_close, prob_tang, g, pos):
+    def show_graph(self, prob_close, prob_tang, pos):
         """
         Display a Networkx graph (g is Networkx graph)
         """
 
+        g = self.networkx_graph()
         people_map = self.ids_dict
 
         healthy = [person_id for person_id in g.nodes() if people_map[person_id].state == -1]
@@ -60,12 +61,12 @@ class Graph:
 
         # make edges (something up here)
         close_contacts = [(u, v) for (u, v, d) in g.edges(data=True) if d["weight"] == prob_close]
-        tang_contacts = [(u, v) for (u, v, d) in g.edges(data=True) if d["weight"] == prob_tang]
-        dangerous_contacts = [(u, v) for (u, v, d) in g.edges(data=True) if people_map[u].state >= 0 or people_map[v].state >= 0]
+        #tang_contacts = [(u, v) for (u, v, d) in g.edges(data=True) if d["weight"] == prob_tang]
+        #dangerous_contacts = [(u, v) for (u, v, d) in g.edges(data=True) if people_map[u].state >= 0 or people_map[v].state >= 0]
 
         # draw edges
         #nx.draw_networkx_edges(g, pos, edgelist= tang_contacts, width=.5)
-        #nx.draw_networkx_edges(g, pos, edgelist= close_contacts, width=1)
+        nx.draw_networkx_edges(g, pos, edgelist= close_contacts, width=.2)
         #nx.draw_networkx_edges(g, pos, edgelist = dangerous_contacts, width=1, edge_color="red")
 
         plt.show()
