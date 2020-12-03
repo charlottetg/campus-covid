@@ -16,51 +16,63 @@ num_tang = 10
 #constants
 PROB_CLOSE = .174
 PROB_TANG = .031
-MEAN_SYMPTOMATIC = 6
-STANDARD_DEV_SYMPTOMATIC = 1.2
+MEAN_SYMPTOMATIC = 4.98
+STANDARD_DEV_SYMPTOMATIC = 4.83
 
 def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptomatic, standard_dev_symptomatic, all_contacts):
     """
-    Runs a simulated spread, returns [graphs, single_stats, average_stats]
+    Runs a simulated spread, returns [graphs, healthy, asymptomatic, quarantined]
     graphs is array of networkx graphs for each day of the simulation *for the first run*
-    single_stats is a 2D array of population [healthy, asymptomatic, quarantined] for each day *for the first run*
-    average_stats is a 2D array of population [healthy, asymptomatic, quarantined] for each day *on average*
-
     note: all_contacts is a Boolean
     """
 
-    healthy = [0] * days
-    asymptomatic = [0] * days
-    quarantined = [0] * days
+    # dimensions of these will be (num_rows, days)
+    healthy = []
+    asymptomatic = []
+    quarantined = []
 
+    # this will be a 1D array
     graphs = []
 
     for i in range(num_runs):
         current_run_graph = deepcopy(graph)
+
+        # 1D arrays of length j
+        current_healthy = [num_students-1]
+        current_asymptomatic = [1]
+        current_quarantined = [0]
+
         for j in range(days):
             current_run_graph.graph_spread(mean_symptomatic, standard_dev_symptomatic)
             people_to_test = random.sample(list(range(1, num_students)), round(num_students / fraction_tested_per_day))
             current_run_graph.dynamic_test(people_to_test, all_contacts, PROB_CLOSE)
 
-            healthy[j] += current_run_graph.num_healthy()
-            asymptomatic[j] += current_run_graph.num_asymptomatic()
-            quarantined[j] += current_run_graph.num_quarantined()
+            current_healthy.append(current_run_graph.num_healthy())
+            current_asymptomatic.append(current_run_graph.num_asymptomatic())
+            current_quarantined.append(current_run_graph.num_quarantined())
 
             if i == 0: # only save first run graphs
-                current_run_graph.print_stats()
                 current_day_graph = deepcopy(current_run_graph).networkx_graph() # want as a networkx graph
                 graphs.append(current_day_graph) # kind of weird, but works!
 
-                if j == days - 1: # last day of first run, save single_stats
-                    single_stats = deepcopy([healthy, asymptomatic, quarantined])
+        healthy.append(current_healthy)
+        asymptomatic.append(current_asymptomatic)
+        quarantined.append(current_quarantined)
 
-    averaged_healthy = [ x / num_runs for x in healthy]
-    averaged_asymptomatic = [ x / num_runs for x in asymptomatic]
-    averaged_quarantined = [ x / num_runs for x in quarantined]
+    return graphs, healthy, asymptomatic, quarantined
 
-    average_stats = [averaged_healthy, averaged_asymptomatic, averaged_quarantined]
 
-    return graphs, single_stats, average_stats
+def get_stats(healthy, asymptomatic, quarantined):
+    """
+    Takes in healthy, asymptomatic, quarantined from run_simulation
+    return np arrays: graph stats is stats of [healthy, asymptomatic, quarantined] from first run
+    """
+
+    graph_stats = np.array([healthy[0], asymptomatic[0], quarantined[0]]) # stats for the first run (that we save the graphs for)
+    average_stats = [np.mean(np.array(healthy), axis=0), np.mean(np.array(asymptomatic), axis=0), np.mean(np.array(quarantined), axis=0)]
+    standard_devs = [np.std(np.array(healthy), axis=0), np.std(np.array(asymptomatic), axis=0), np.std(np.array(quarantined), axis=0)]
+
+    return graph_stats, average_stats, standard_devs
 
 
 @app.route("/")
