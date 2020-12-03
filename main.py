@@ -16,8 +16,8 @@ num_tang = 10
 #constants
 PROB_CLOSE = .174
 PROB_TANG = .031
-MEAN_SYMPTOMATIC = 6
-STANDARD_DEV_SYMPTOMATIC = 1.2
+MEAN_SYMPTOMATIC = 4.98
+STANDARD_DEV_SYMPTOMATIC = 4.83
 
 # build social_graph from Dash data
 """
