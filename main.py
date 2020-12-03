@@ -10,9 +10,9 @@ from Person import Person
 from Graph import Graph
 
 # var
-num_students = 20
+num_students = 2275
 num_close = 4
-num_tang = 10
+num_tang = 5
 
 #constants
 PROB_CLOSE = .174
@@ -78,7 +78,7 @@ def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptoma
     quarantined = []
 
     # this will be a 1D array
-    graphs = []
+    graphs = [graph]
 
     for i in range(num_runs):
         current_run_graph = deepcopy(graph)
@@ -121,8 +121,14 @@ def get_stats(healthy, asymptomatic, quarantined):
     return graph_stats, average_stats, standard_devs
 
 
-results = run_simulation(random_graph, 2, 3, 21, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC, False)
+results = run_simulation(random_graph, 1, 7, 21, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC, False)
 graphs = results[0]
+print(len(graphs))
+
+first_graph = graphs[0]
+
+
+
 healthy = results[1]
 asymptomatic = results[2]
 quarantined = results[3]

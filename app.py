@@ -32,7 +32,7 @@ def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptoma
     quarantined = []
 
     # this will be a 1D array
-    graphs = []
+    graphs = [graph]
 
     for i in range(num_runs):
         current_run_graph = deepcopy(graph)
