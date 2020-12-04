@@ -60,6 +60,11 @@ def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptoma
         quarantined.append(current_quarantined)
 
     return graphs, healthy, asymptomatic, quarantined
+    #
+    # a simulation consists of:
+    #        -   a set of relationships within the graph
+    #        -   a set of peoples statuses for each day
+    # so maybe we want a set of simulations?
 
 
 def get_stats(healthy, asymptomatic, quarantined):
@@ -91,29 +96,27 @@ def simulationsetup():
     #now we have pathways to get to different days?
 
     #user input tells us which day(results, __) to return
+
+    #we have a TITLE part of pyvis
+    #node.title can be an html element-- could that be like an opaque box that shows it a lil better
+
+
+
+
     return day(results, 1)
 
 def day(results, i):
     daygraph = Network()
     daygraph.from_nx(results[0][i])
-    daygraph.show("templates/"+str(i) + ".html")
+    #daygraph.show_buttons()
+    #daygraph.show("templates/"+str(i) + ".html")
+    daygraph.save_graph("templates/"+str(i) + ".html")
     return render_template(str(i)+".html")
 
-"""
-@app.route("/<id>")
-def persondata(id):
-    iid = int(id)
-    p = Person([[iid, 0],[iid, -1],[2,.5],[3,.5]])
-    if (p.state==-1):
-        return "person " + id + " is healthy!"
-    else:
-        return jsonify(p.contacts)
 
-@app.route("/<day>")
-def time(day):
-    return "it is now day: " + day
-
-"""
+@app.route("/h")
+def h():
+    return render_template('hello.html')
 
 
 if __name__ == "__main__":
