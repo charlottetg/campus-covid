@@ -10,7 +10,7 @@
 * {box-sizing: border-box}
 body {font-family: Helvetica, sans-serif; align: center; width: 500px}
 
-.steps {
+.networks {
     display: none;
     height:500px
 }
@@ -94,10 +94,225 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
 
 <div class="simulation-container">
 
-    <div class = "steps">
-        <div style="color: black; font-size: 50px; position: absolute; left:15px">4</div>
-        <div id="n"></div>
-    </div>
+    <div id = "mynetwork" class="networks"></div>
+    <script type="text/javascript">
+
+        // initialize global variables.
+        var edges;
+        var nodes;
+        var network;
+        var container;
+        var options, data;
+
+
+        // This method is responsible for drawing the graph, returns the drawn network
+        function drawGraph() {
+            var container = document.getElementById('mynetwork');
+
+
+
+            // parsing and collecting nodes and edges from the python
+            nodes = new vis.DataSet([{"id": 1, "label": 1, "shape": "dot", "size": 10}, {"id": 5, "label": 5, "shape": "dot", "size": 10}, {"id": 8, "label": 8, "shape": "dot", "size": 10}, {"id": 19, "label": 19, "shape": "dot", "size": 10}, {"id": 10, "label": 10, "shape": "dot", "size": 10}, {"id": 7, "label": 7, "shape": "dot", "size": 10}, {"id": 15, "label": 15, "shape": "dot", "size": 10}, {"id": 18, "label": 18, "shape": "dot", "size": 10}, {"id": 4, "label": 4, "shape": "dot", "size": 10}, {"id": 12, "label": 12, "shape": "dot", "size": 10}, {"id": 11, "label": 11, "shape": "dot", "size": 10}, {"id": 16, "label": 16, "shape": "dot", "size": 10}, {"id": 13, "label": 13, "shape": "dot", "size": 10}, {"id": 20, "label": 20, "shape": "dot", "size": 10}, {"id": 6, "label": 6, "shape": "dot", "size": 10}, {"id": 2, "label": 2, "shape": "dot", "size": 10}, {"id": 3, "label": 3, "shape": "dot", "size": 10}, {"id": 17, "label": 17, "shape": "dot", "size": 10}, {"id": 9, "label": 9, "shape": "dot", "size": 10}, {"id": 14, "label": 14, "shape": "dot", "size": 10}]);
+            edges = new vis.DataSet([{"from": 1, "to": 5, "weight": 0.174}, {"from": 1, "to": 8, "weight": 0.174}, {"from": 1, "to": 19, "weight": 0.174}, {"from": 1, "to": 10, "weight": 0.174}, {"from": 1, "to": 7, "weight": 0.174}, {"from": 1, "to": 15, "weight": 0.174}, {"from": 1, "to": 18, "weight": 0.174}, {"from": 1, "to": 4, "weight": 0.031}, {"from": 1, "to": 12, "weight": 0.031}, {"from": 1, "to": 11, "weight": 0.031}, {"from": 1, "to": 16, "weight": 0.031}, {"from": 1, "to": 13, "weight": 0.031}, {"from": 1, "to": 20, "weight": 0.031}, {"from": 1, "to": 6, "weight": 0.031}, {"from": 1, "to": 2, "weight": 0.031}, {"from": 1, "to": 3, "weight": 0.031}, {"from": 1, "to": 17, "weight": 0.031}, {"from": 1, "to": 9, "weight": 0.031}, {"from": 1, "to": 14, "weight": 0.031}, {"from": 5, "to": 20, "weight": 0.174}, {"from": 5, "to": 18, "weight": 0.174}, {"from": 5, "to": 12, "weight": 0.174}, {"from": 5, "to": 6, "weight": 0.174}, {"from": 5, "to": 13, "weight": 0.174}, {"from": 5, "to": 3, "weight": 0.031}, {"from": 5, "to": 4, "weight": 0.031}, {"from": 5, "to": 9, "weight": 0.031}, {"from": 5, "to": 11, "weight": 0.031}, {"from": 5, "to": 10, "weight": 0.031}, {"from": 5, "to": 19, "weight": 0.031}, {"from": 5, "to": 15, "weight": 0.031}, {"from": 5, "to": 17, "weight": 0.031}, {"from": 5, "to": 8, "weight": 0.031}, {"from": 5, "to": 2, "weight": 0.031}, {"from": 5, "to": 14, "weight": 0.031}, {"from": 5, "to": 16, "weight": 0.031}, {"from": 8, "to": 4, "weight": 0.174}, {"from": 8, "to": 9, "weight": 0.174}, {"from": 8, "to": 11, "weight": 0.174}, {"from": 8, "to": 2, "weight": 0.031}, {"from": 8, "to": 3, "weight": 0.031}, {"from": 8, "to": 19, "weight": 0.031}, {"from": 8, "to": 16, "weight": 0.031}, {"from": 8, "to": 15, "weight": 0.031}, {"from": 8, "to": 20, "weight": 0.031}, {"from": 8, "to": 6, "weight": 0.031}, {"from": 8, "to": 17, "weight": 0.031}, {"from": 8, "to": 10, "weight": 0.031}, {"from": 8, "to": 14, "weight": 0.031}, {"from": 19, "to": 6, "weight": 0.174}, {"from": 19, "to": 20, "weight": 0.174}, {"from": 19, "to": 9, "weight": 0.174}, {"from": 19, "to": 2, "weight": 0.031}, {"from": 19, "to": 3, "weight": 0.031}, {"from": 19, "to": 4, "weight": 0.031}, {"from": 19, "to": 7, "weight": 0.031}, {"from": 19, "to": 10, "weight": 0.031}, {"from": 19, "to": 13, "weight": 0.031}, {"from": 19, "to": 15, "weight": 0.031}, {"from": 19, "to": 18, "weight": 0.031}, {"from": 10, "to": 9, "weight": 0.174}, {"from": 10, "to": 12, "weight": 0.174}, {"from": 10, "to": 2, "weight": 0.174}, {"from": 10, "to": 11, "weight": 0.174}, {"from": 10, "to": 13, "weight": 0.174}, {"from": 10, "to": 17, "weight": 0.174}, {"from": 10, "to": 18, "weight": 0.174}, {"from": 10, "to": 3, "weight": 0.031}, {"from": 10, "to": 4, "weight": 0.031}, {"from": 10, "to": 6, "weight": 0.031}, {"from": 10, "to": 15, "weight": 0.031}, {"from": 10, "to": 7, "weight": 0.031}, {"from": 10, "to": 20, "weight": 0.031}, {"from": 10, "to": 16, "weight": 0.031}, {"from": 10, "to": 14, "weight": 0.031}, {"from": 2, "to": 3, "weight": 0.174}, {"from": 2, "to": 7, "weight": 0.174}, {"from": 2, "to": 9, "weight": 0.174}, {"from": 2, "to": 13, "weight": 0.174}, {"from": 2, "to": 14, "weight": 0.174}, {"from": 2, "to": 11, "weight": 0.031}, {"from": 2, "to": 20, "weight": 0.031}, {"from": 2, "to": 17, "weight": 0.031}, {"from": 2, "to": 15, "weight": 0.031}, {"from": 2, "to": 6, "weight": 0.031}, {"from": 2, "to": 18, "weight": 0.031}, {"from": 2, "to": 12, "weight": 0.031}, {"from": 2, "to": 4, "weight": 0.031}, {"from": 3, "to": 4, "weight": 0.174}, {"from": 3, "to": 17, "weight": 0.174}, {"from": 3, "to": 16, "weight": 0.174}, {"from": 3, "to": 7, "weight": 0.174}, {"from": 3, "to": 12, "weight": 0.031}, {"from": 3, "to": 6, "weight": 0.031}, {"from": 3, "to": 20, "weight": 0.031}, {"from": 3, "to": 14, "weight": 0.031}, {"from": 3, "to": 9, "weight": 0.031}, {"from": 3, "to": 13, "weight": 0.031}, {"from": 7, "to": 9, "weight": 0.174}, {"from": 7, "to": 12, "weight": 0.174}, {"from": 7, "to": 4, "weight": 0.031}, {"from": 7, "to": 13, "weight": 0.031}, {"from": 7, "to": 6, "weight": 0.031}, {"from": 7, "to": 17, "weight": 0.031}, {"from": 7, "to": 16, "weight": 0.031}, {"from": 7, "to": 11, "weight": 0.031}, {"from": 7, "to": 14, "weight": 0.031}, {"from": 7, "to": 15, "weight": 0.031}, {"from": 7, "to": 20, "weight": 0.031}, {"from": 7, "to": 18, "weight": 0.031}, {"from": 9, "to": 11, "weight": 0.174}, {"from": 9, "to": 12, "weight": 0.174}, {"from": 9, "to": 4, "weight": 0.031}, {"from": 9, "to": 6, "weight": 0.031}, {"from": 9, "to": 15, "weight": 0.031}, {"from": 9, "to": 20, "weight": 0.031}, {"from": 9, "to": 17, "weight": 0.031}, {"from": 9, "to": 13, "weight": 0.031}, {"from": 9, "to": 18, "weight": 0.031}, {"from": 13, "to": 4, "weight": 0.174}, {"from": 13, "to": 20, "weight": 0.174}, {"from": 13, "to": 6, "weight": 0.031}, {"from": 13, "to": 12, "weight": 0.031}, {"from": 13, "to": 17, "weight": 0.031}, {"from": 13, "to": 16, "weight": 0.031}, {"from": 13, "to": 15, "weight": 0.031}, {"from": 13, "to": 14, "weight": 0.031}, {"from": 4, "to": 11, "weight": 0.174}, {"from": 4, "to": 15, "weight": 0.174}, {"from": 4, "to": 6, "weight": 0.174}, {"from": 4, "to": 17, "weight": 0.031}, {"from": 4, "to": 14, "weight": 0.031}, {"from": 4, "to": 18, "weight": 0.031}, {"from": 17, "to": 14, "weight": 0.174}, {"from": 17, "to": 16, "weight": 0.174}, {"from": 17, "to": 11, "weight": 0.031}, {"from": 17, "to": 12, "weight": 0.031}, {"from": 17, "to": 18, "weight": 0.031}, {"from": 16, "to": 14, "weight": 0.174}, {"from": 16, "to": 15, "weight": 0.174}, {"from": 16, "to": 18, "weight": 0.174}, {"from": 16, "to": 6, "weight": 0.031}, {"from": 16, "to": 11, "weight": 0.031}, {"from": 16, "to": 12, "weight": 0.031}, {"from": 16, "to": 20, "weight": 0.031}, {"from": 11, "to": 6, "weight": 0.031}, {"from": 11, "to": 20, "weight": 0.031}, {"from": 11, "to": 12, "weight": 0.031}, {"from": 11, "to": 14, "weight": 0.031}, {"from": 11, "to": 15, "weight": 0.031}, {"from": 11, "to": 18, "weight": 0.031}, {"from": 15, "to": 12, "weight": 0.174}, {"from": 15, "to": 14, "weight": 0.031}, {"from": 15, "to": 18, "weight": 0.031}, {"from": 6, "to": 14, "weight": 0.174}, {"from": 6, "to": 18, "weight": 0.031}, {"from": 6, "to": 12, "weight": 0.031}, {"from": 20, "to": 14, "weight": 0.174}, {"from": 20, "to": 12, "weight": 0.031}, {"from": 18, "to": 12, "weight": 0.031}, {"from": 12, "to": 14, "weight": 0.031}]);
+
+            // adding nodes and edges to the graph
+            data = {nodes: nodes, edges: edges};
+
+            var options = {
+        "configure": {
+            "enabled": false
+        },
+        "edges": {
+            "color": {
+                "inherit": true
+            },
+            "smooth": {
+                "enabled": false,
+                "type": "continuous"
+            }
+        },
+        "interaction": {
+            "dragNodes": true,
+            "hideEdgesOnDrag": false,
+            "hideNodesOnDrag": false
+        },
+        "physics": {
+            "enabled": true,
+            "stabilization": {
+                "enabled": true,
+                "fit": true,
+                "iterations": 1000,
+                "onlyDynamicEdges": false,
+                "updateInterval": 50
+            }
+        }
+    };
+
+
+
+
+
+            network = new vis.Network(container, data, options);
+
+
+
+
+
+
+            return network;
+
+        }
+
+        drawGraph();
+
+    </script>
+
+    <div id = "s" class="networks"></div>
+    <script type="text/javascript">
+
+        // initialize global variables.
+        var edges;
+        var nodes;
+        var network;
+        var container;
+        var options, data;
+
+
+        // This method is responsible for drawing the graph, returns the drawn network
+        function drawGraph() {
+            var container = document.getElementById('s');
+
+
+
+            // parsing and collecting nodes and edges from the python
+            nodes = new vis.DataSet([{"id": 1, "label": 1, "shape": "dot", "size": 10}, {"id": 5, "label": 5, "shape": "dot", "size": 10}, {"id": 8, "label": 8, "shape": "dot", "size": 10}, {"id": 19, "label": 19, "shape": "dot", "size": 10}, {"id": 10, "label": 10, "shape": "dot", "size": 10}, {"id": 7, "label": 7, "shape": "dot", "size": 10}, {"id": 15, "label": 15, "shape": "dot", "size": 10}, {"id": 18, "label": 18, "shape": "dot", "size": 10}, {"id": 4, "label": 4, "shape": "dot", "size": 10}, {"id": 12, "label": 12, "shape": "dot", "size": 10}, {"id": 11, "label": 11, "shape": "dot", "size": 10}, {"id": 16, "label": 16, "shape": "dot", "size": 10}, {"id": 13, "label": 13, "shape": "dot", "size": 10}, {"id": 20, "label": 20, "shape": "dot", "size": 10}, {"id": 6, "label": 6, "shape": "dot", "size": 10}, {"id": 2, "label": 2, "shape": "dot", "size": 10}, {"id": 3, "label": 3, "shape": "dot", "size": 10}, {"id": 17, "label": 17, "shape": "dot", "size": 10}, {"id": 9, "label": 9, "shape": "dot", "size": 10}, {"id": 14, "label": 14, "shape": "dot", "size": 10}]);
+            edges = new vis.DataSet([{"from": 1, "to": 5, "weight": 0.174}, {"from": 1, "to": 8, "weight": 0.174}, {"from": 1, "to": 19, "weight": 0.174}, {"from": 1, "to": 10, "weight": 0.174}, {"from": 1, "to": 7, "weight": 0.174}, {"from": 1, "to": 15, "weight": 0.174}, {"from": 1, "to": 18, "weight": 0.174}, {"from": 1, "to": 4, "weight": 0.031}, {"from": 1, "to": 12, "weight": 0.031}, {"from": 1, "to": 11, "weight": 0.031}, {"from": 1, "to": 16, "weight": 0.031}, {"from": 1, "to": 13, "weight": 0.031}, {"from": 1, "to": 20, "weight": 0.031}, {"from": 1, "to": 6, "weight": 0.031}, {"from": 1, "to": 2, "weight": 0.031}, {"from": 1, "to": 3, "weight": 0.031}, {"from": 1, "to": 17, "weight": 0.031}, {"from": 1, "to": 9, "weight": 0.031}, {"from": 1, "to": 14, "weight": 0.031}, {"from": 5, "to": 20, "weight": 0.174}, {"from": 5, "to": 18, "weight": 0.174}, {"from": 5, "to": 12, "weight": 0.174}, {"from": 5, "to": 6, "weight": 0.174}, {"from": 5, "to": 13, "weight": 0.174}, {"from": 5, "to": 3, "weight": 0.031}, {"from": 5, "to": 4, "weight": 0.031}, {"from": 5, "to": 9, "weight": 0.031}, {"from": 5, "to": 11, "weight": 0.031}, {"from": 5, "to": 10, "weight": 0.031}, {"from": 5, "to": 19, "weight": 0.031}, {"from": 5, "to": 15, "weight": 0.031}, {"from": 5, "to": 17, "weight": 0.031}, {"from": 5, "to": 8, "weight": 0.031}, {"from": 5, "to": 2, "weight": 0.031}, {"from": 5, "to": 14, "weight": 0.031}, {"from": 5, "to": 16, "weight": 0.031}, {"from": 8, "to": 4, "weight": 0.174}, {"from": 8, "to": 9, "weight": 0.174}, {"from": 8, "to": 11, "weight": 0.174}, {"from": 8, "to": 2, "weight": 0.031}, {"from": 8, "to": 3, "weight": 0.031}, {"from": 8, "to": 19, "weight": 0.031}, {"from": 8, "to": 16, "weight": 0.031}, {"from": 8, "to": 15, "weight": 0.031}, {"from": 8, "to": 20, "weight": 0.031}, {"from": 8, "to": 6, "weight": 0.031}, {"from": 8, "to": 17, "weight": 0.031}, {"from": 8, "to": 10, "weight": 0.031}, {"from": 8, "to": 14, "weight": 0.031}, {"from": 19, "to": 6, "weight": 0.174}, {"from": 19, "to": 20, "weight": 0.174}, {"from": 19, "to": 9, "weight": 0.174}, {"from": 19, "to": 2, "weight": 0.031}, {"from": 19, "to": 3, "weight": 0.031}, {"from": 19, "to": 4, "weight": 0.031}, {"from": 19, "to": 7, "weight": 0.031}, {"from": 19, "to": 10, "weight": 0.031}, {"from": 19, "to": 13, "weight": 0.031}, {"from": 19, "to": 15, "weight": 0.031}, {"from": 19, "to": 18, "weight": 0.031}, {"from": 10, "to": 9, "weight": 0.174}, {"from": 10, "to": 12, "weight": 0.174}, {"from": 10, "to": 2, "weight": 0.174}, {"from": 10, "to": 11, "weight": 0.174}, {"from": 10, "to": 13, "weight": 0.174}, {"from": 10, "to": 17, "weight": 0.174}, {"from": 10, "to": 18, "weight": 0.174}, {"from": 10, "to": 3, "weight": 0.031}, {"from": 10, "to": 4, "weight": 0.031}, {"from": 10, "to": 6, "weight": 0.031}, {"from": 10, "to": 15, "weight": 0.031}, {"from": 10, "to": 7, "weight": 0.031}, {"from": 10, "to": 20, "weight": 0.031}, {"from": 10, "to": 16, "weight": 0.031}, {"from": 10, "to": 14, "weight": 0.031}, {"from": 2, "to": 3, "weight": 0.174}, {"from": 2, "to": 7, "weight": 0.174}, {"from": 2, "to": 9, "weight": 0.174}, {"from": 2, "to": 13, "weight": 0.174}, {"from": 2, "to": 14, "weight": 0.174}, {"from": 2, "to": 11, "weight": 0.031}, {"from": 2, "to": 20, "weight": 0.031}, {"from": 2, "to": 17, "weight": 0.031}, {"from": 2, "to": 15, "weight": 0.031}, {"from": 2, "to": 6, "weight": 0.031}, {"from": 2, "to": 18, "weight": 0.031}, {"from": 2, "to": 12, "weight": 0.031}, {"from": 2, "to": 4, "weight": 0.031}, {"from": 3, "to": 4, "weight": 0.174}, {"from": 3, "to": 17, "weight": 0.174}, {"from": 3, "to": 16, "weight": 0.174}, {"from": 3, "to": 7, "weight": 0.174}, {"from": 3, "to": 12, "weight": 0.031}, {"from": 3, "to": 6, "weight": 0.031}, {"from": 3, "to": 20, "weight": 0.031}, {"from": 3, "to": 14, "weight": 0.031}, {"from": 3, "to": 9, "weight": 0.031}, {"from": 3, "to": 13, "weight": 0.031}, {"from": 7, "to": 9, "weight": 0.174}, {"from": 7, "to": 12, "weight": 0.174}, {"from": 7, "to": 4, "weight": 0.031}, {"from": 7, "to": 13, "weight": 0.031}, {"from": 7, "to": 6, "weight": 0.031}, {"from": 7, "to": 17, "weight": 0.031}, {"from": 7, "to": 16, "weight": 0.031}, {"from": 7, "to": 11, "weight": 0.031}, {"from": 7, "to": 14, "weight": 0.031}, {"from": 7, "to": 15, "weight": 0.031}, {"from": 7, "to": 20, "weight": 0.031}, {"from": 7, "to": 18, "weight": 0.031}, {"from": 9, "to": 11, "weight": 0.174}, {"from": 9, "to": 12, "weight": 0.174}, {"from": 9, "to": 4, "weight": 0.031}, {"from": 9, "to": 6, "weight": 0.031}, {"from": 9, "to": 15, "weight": 0.031}, {"from": 9, "to": 20, "weight": 0.031}, {"from": 9, "to": 17, "weight": 0.031}, {"from": 9, "to": 13, "weight": 0.031}, {"from": 9, "to": 18, "weight": 0.031}, {"from": 13, "to": 4, "weight": 0.174}, {"from": 13, "to": 20, "weight": 0.174}, {"from": 13, "to": 6, "weight": 0.031}, {"from": 13, "to": 12, "weight": 0.031}, {"from": 13, "to": 17, "weight": 0.031}, {"from": 13, "to": 16, "weight": 0.031}, {"from": 13, "to": 15, "weight": 0.031}, {"from": 13, "to": 14, "weight": 0.031}, {"from": 4, "to": 11, "weight": 0.174}, {"from": 4, "to": 15, "weight": 0.174}, {"from": 4, "to": 6, "weight": 0.174}, {"from": 4, "to": 17, "weight": 0.031}, {"from": 4, "to": 14, "weight": 0.031}, {"from": 4, "to": 18, "weight": 0.031}, {"from": 17, "to": 14, "weight": 0.174}, {"from": 17, "to": 16, "weight": 0.174}, {"from": 17, "to": 11, "weight": 0.031}, {"from": 17, "to": 12, "weight": 0.031}, {"from": 17, "to": 18, "weight": 0.031}, {"from": 16, "to": 14, "weight": 0.174}, {"from": 16, "to": 15, "weight": 0.174}, {"from": 16, "to": 18, "weight": 0.174}, {"from": 16, "to": 6, "weight": 0.031}, {"from": 16, "to": 11, "weight": 0.031}, {"from": 16, "to": 12, "weight": 0.031}, {"from": 16, "to": 20, "weight": 0.031}, {"from": 11, "to": 6, "weight": 0.031}, {"from": 11, "to": 20, "weight": 0.031}, {"from": 11, "to": 12, "weight": 0.031}, {"from": 11, "to": 14, "weight": 0.031}, {"from": 11, "to": 15, "weight": 0.031}, {"from": 11, "to": 18, "weight": 0.031}, {"from": 15, "to": 12, "weight": 0.174}, {"from": 15, "to": 14, "weight": 0.031}, {"from": 15, "to": 18, "weight": 0.031}, {"from": 6, "to": 14, "weight": 0.174}, {"from": 6, "to": 18, "weight": 0.031}, {"from": 6, "to": 12, "weight": 0.031}, {"from": 20, "to": 14, "weight": 0.174}, {"from": 20, "to": 12, "weight": 0.031}, {"from": 18, "to": 12, "weight": 0.031}, {"from": 12, "to": 14, "weight": 0.031}]);
+
+            // adding nodes and edges to the graph
+            data = {nodes: nodes, edges: edges};
+
+            var options = {
+                "configure": {
+                    "enabled": false
+                },
+                "edges": {
+                    "color": {
+                        "inherit": true
+                    },
+                    "smooth": {
+                        "enabled": false,
+                        "type": "continuous"
+                    }
+                },
+                "interaction": {
+                    "dragNodes": true,
+                    "hideEdgesOnDrag": false,
+                    "hideNodesOnDrag": false
+                },
+                "physics": {
+                    "enabled": true,
+                    "stabilization": {
+                        "enabled": true,
+                        "fit": true,
+                        "iterations": 1000,
+                        "onlyDynamicEdges": false,
+                        "updateInterval": 50
+                    }
+                }
+            };
+
+
+
+
+
+            network = new vis.Network(container, data, options);
+
+
+
+
+
+
+            return network;
+
+        }
+
+        drawGraph();
+
+    </script>
+
+    <div id = "t" class = "networks"></div>
+    <script type="text/javascript">
+
+        // initialize global variables.
+        var edges;
+        var nodes;
+        var network;
+        var container;
+        var options, data;
+
+
+        // This method is responsible for drawing the graph, returns the drawn network
+        function drawGraph() {
+            var container = document.getElementById('t');
+
+
+
+            // parsing and collecting nodes and edges from the python
+            nodes = new vis.DataSet([{"id": 1, "label": 1, "shape": "dot", "size": 10}, {"id": 5, "label": 5, "shape": "dot", "size": 10}, {"id": 8, "label": 8, "shape": "dot", "size": 10}, {"id": 19, "label": 19, "shape": "dot", "size": 10}, {"id": 10, "label": 10, "shape": "dot", "size": 10}, {"id": 7, "label": 7, "shape": "dot", "size": 10}, {"id": 15, "label": 15, "shape": "dot", "size": 10}, {"id": 18, "label": 18, "shape": "dot", "size": 10}, {"id": 4, "label": 4, "shape": "dot", "size": 10}, {"id": 12, "label": 12, "shape": "dot", "size": 10}, {"id": 11, "label": 11, "shape": "dot", "size": 10}, {"id": 16, "label": 16, "shape": "dot", "size": 10}, {"id": 13, "label": 13, "shape": "dot", "size": 10}, {"id": 20, "label": 20, "shape": "dot", "size": 10}, {"id": 6, "label": 6, "shape": "dot", "size": 10}, {"id": 2, "label": 2, "shape": "dot", "size": 10}, {"id": 3, "label": 3, "shape": "dot", "size": 10}, {"id": 17, "label": 17, "shape": "dot", "size": 10}, {"id": 9, "label": 9, "shape": "dot", "size": 10}, {"id": 14, "label": 14, "shape": "dot", "size": 10}]);
+            edges = new vis.DataSet([{"from": 1, "to": 5, "weight": 0.174}, {"from": 1, "to": 8, "weight": 0.174}, {"from": 1, "to": 19, "weight": 0.174}, {"from": 1, "to": 10, "weight": 0.174}, {"from": 1, "to": 7, "weight": 0.174}, {"from": 1, "to": 15, "weight": 0.174}, {"from": 1, "to": 18, "weight": 0.174}, {"from": 1, "to": 4, "weight": 0.031}, {"from": 1, "to": 12, "weight": 0.031}, {"from": 1, "to": 11, "weight": 0.031}, {"from": 1, "to": 16, "weight": 0.031}, {"from": 1, "to": 13, "weight": 0.031}, {"from": 1, "to": 20, "weight": 0.031}, {"from": 1, "to": 6, "weight": 0.031}, {"from": 1, "to": 2, "weight": 0.031}, {"from": 1, "to": 3, "weight": 0.031}, {"from": 1, "to": 17, "weight": 0.031}, {"from": 1, "to": 9, "weight": 0.031}, {"from": 1, "to": 14, "weight": 0.031}, {"from": 5, "to": 20, "weight": 0.174}, {"from": 5, "to": 18, "weight": 0.174}, {"from": 5, "to": 12, "weight": 0.174}, {"from": 5, "to": 6, "weight": 0.174}, {"from": 5, "to": 13, "weight": 0.174}, {"from": 5, "to": 3, "weight": 0.031}, {"from": 5, "to": 4, "weight": 0.031}, {"from": 5, "to": 9, "weight": 0.031}, {"from": 5, "to": 11, "weight": 0.031}, {"from": 5, "to": 10, "weight": 0.031}, {"from": 5, "to": 19, "weight": 0.031}, {"from": 5, "to": 15, "weight": 0.031}, {"from": 5, "to": 17, "weight": 0.031}, {"from": 5, "to": 8, "weight": 0.031}, {"from": 5, "to": 2, "weight": 0.031}, {"from": 5, "to": 14, "weight": 0.031}, {"from": 5, "to": 16, "weight": 0.031}, {"from": 8, "to": 4, "weight": 0.174}, {"from": 8, "to": 9, "weight": 0.174}, {"from": 8, "to": 11, "weight": 0.174}, {"from": 8, "to": 2, "weight": 0.031}, {"from": 8, "to": 3, "weight": 0.031}, {"from": 8, "to": 19, "weight": 0.031}, {"from": 8, "to": 16, "weight": 0.031}, {"from": 8, "to": 15, "weight": 0.031}, {"from": 8, "to": 20, "weight": 0.031}, {"from": 8, "to": 6, "weight": 0.031}, {"from": 8, "to": 17, "weight": 0.031}, {"from": 8, "to": 10, "weight": 0.031}, {"from": 8, "to": 14, "weight": 0.031}, {"from": 19, "to": 6, "weight": 0.174}, {"from": 19, "to": 20, "weight": 0.174}, {"from": 19, "to": 9, "weight": 0.174}, {"from": 19, "to": 2, "weight": 0.031}, {"from": 19, "to": 3, "weight": 0.031}, {"from": 19, "to": 4, "weight": 0.031}, {"from": 19, "to": 7, "weight": 0.031}, {"from": 19, "to": 10, "weight": 0.031}, {"from": 19, "to": 13, "weight": 0.031}, {"from": 19, "to": 15, "weight": 0.031}, {"from": 19, "to": 18, "weight": 0.031}, {"from": 10, "to": 9, "weight": 0.174}, {"from": 10, "to": 12, "weight": 0.174}, {"from": 10, "to": 2, "weight": 0.174}, {"from": 10, "to": 11, "weight": 0.174}, {"from": 10, "to": 13, "weight": 0.174}, {"from": 10, "to": 17, "weight": 0.174}, {"from": 10, "to": 18, "weight": 0.174}, {"from": 10, "to": 3, "weight": 0.031}, {"from": 10, "to": 4, "weight": 0.031}, {"from": 10, "to": 6, "weight": 0.031}, {"from": 10, "to": 15, "weight": 0.031}, {"from": 10, "to": 7, "weight": 0.031}, {"from": 10, "to": 20, "weight": 0.031}, {"from": 10, "to": 16, "weight": 0.031}, {"from": 10, "to": 14, "weight": 0.031}, {"from": 2, "to": 3, "weight": 0.174}, {"from": 2, "to": 7, "weight": 0.174}, {"from": 2, "to": 9, "weight": 0.174}, {"from": 2, "to": 13, "weight": 0.174}, {"from": 2, "to": 14, "weight": 0.174}, {"from": 2, "to": 11, "weight": 0.031}, {"from": 2, "to": 20, "weight": 0.031}, {"from": 2, "to": 17, "weight": 0.031}, {"from": 2, "to": 15, "weight": 0.031}, {"from": 2, "to": 6, "weight": 0.031}, {"from": 2, "to": 18, "weight": 0.031}, {"from": 2, "to": 12, "weight": 0.031}, {"from": 2, "to": 4, "weight": 0.031}, {"from": 3, "to": 4, "weight": 0.174}, {"from": 3, "to": 17, "weight": 0.174}, {"from": 3, "to": 16, "weight": 0.174}, {"from": 3, "to": 7, "weight": 0.174}, {"from": 3, "to": 12, "weight": 0.031}, {"from": 3, "to": 6, "weight": 0.031}, {"from": 3, "to": 20, "weight": 0.031}, {"from": 3, "to": 14, "weight": 0.031}, {"from": 3, "to": 9, "weight": 0.031}, {"from": 3, "to": 13, "weight": 0.031}, {"from": 7, "to": 9, "weight": 0.174}, {"from": 7, "to": 12, "weight": 0.174}, {"from": 7, "to": 4, "weight": 0.031}, {"from": 7, "to": 13, "weight": 0.031}, {"from": 7, "to": 6, "weight": 0.031}, {"from": 7, "to": 17, "weight": 0.031}, {"from": 7, "to": 16, "weight": 0.031}, {"from": 7, "to": 11, "weight": 0.031}, {"from": 7, "to": 14, "weight": 0.031}, {"from": 7, "to": 15, "weight": 0.031}, {"from": 7, "to": 20, "weight": 0.031}, {"from": 7, "to": 18, "weight": 0.031}, {"from": 9, "to": 11, "weight": 0.174}, {"from": 9, "to": 12, "weight": 0.174}, {"from": 9, "to": 4, "weight": 0.031}, {"from": 9, "to": 6, "weight": 0.031}, {"from": 9, "to": 15, "weight": 0.031}, {"from": 9, "to": 20, "weight": 0.031}, {"from": 9, "to": 17, "weight": 0.031}, {"from": 9, "to": 13, "weight": 0.031}, {"from": 9, "to": 18, "weight": 0.031}, {"from": 13, "to": 4, "weight": 0.174}, {"from": 13, "to": 20, "weight": 0.174}, {"from": 13, "to": 6, "weight": 0.031}, {"from": 13, "to": 12, "weight": 0.031}, {"from": 13, "to": 17, "weight": 0.031}, {"from": 13, "to": 16, "weight": 0.031}, {"from": 13, "to": 15, "weight": 0.031}, {"from": 13, "to": 14, "weight": 0.031}, {"from": 4, "to": 11, "weight": 0.174}, {"from": 4, "to": 15, "weight": 0.174}, {"from": 4, "to": 6, "weight": 0.174}, {"from": 4, "to": 17, "weight": 0.031}, {"from": 4, "to": 14, "weight": 0.031}, {"from": 4, "to": 18, "weight": 0.031}, {"from": 17, "to": 14, "weight": 0.174}, {"from": 17, "to": 16, "weight": 0.174}, {"from": 17, "to": 11, "weight": 0.031}, {"from": 17, "to": 12, "weight": 0.031}, {"from": 17, "to": 18, "weight": 0.031}, {"from": 16, "to": 14, "weight": 0.174}, {"from": 16, "to": 15, "weight": 0.174}, {"from": 16, "to": 18, "weight": 0.174}, {"from": 16, "to": 6, "weight": 0.031}, {"from": 16, "to": 11, "weight": 0.031}, {"from": 16, "to": 12, "weight": 0.031}, {"from": 16, "to": 20, "weight": 0.031}, {"from": 11, "to": 6, "weight": 0.031}, {"from": 11, "to": 20, "weight": 0.031}, {"from": 11, "to": 12, "weight": 0.031}, {"from": 11, "to": 14, "weight": 0.031}, {"from": 11, "to": 15, "weight": 0.031}, {"from": 11, "to": 18, "weight": 0.031}, {"from": 15, "to": 12, "weight": 0.174}, {"from": 15, "to": 14, "weight": 0.031}, {"from": 15, "to": 18, "weight": 0.031}, {"from": 6, "to": 14, "weight": 0.174}, {"from": 6, "to": 18, "weight": 0.031}, {"from": 6, "to": 12, "weight": 0.031}, {"from": 20, "to": 14, "weight": 0.174}, {"from": 20, "to": 12, "weight": 0.031}, {"from": 18, "to": 12, "weight": 0.031}, {"from": 12, "to": 14, "weight": 0.031}]);
+
+            // adding nodes and edges to the graph
+            data = {nodes: nodes, edges: edges};
+
+            var options = {
+        "configure": {
+            "enabled": false
+        },
+        "edges": {
+            "color": {
+                "inherit": true
+            },
+            "smooth": {
+                "enabled": false,
+                "type": "continuous"
+            }
+        },
+        "interaction": {
+            "dragNodes": true,
+            "hideEdgesOnDrag": false,
+            "hideNodesOnDrag": false
+        },
+        "physics": {
+            "enabled": true,
+            "stabilization": {
+                "enabled": true,
+                "fit": true,
+                "iterations": 1000,
+                "onlyDynamicEdges": false,
+                "updateInterval": 50
+            }
+        }
+    };
+
+
+
+
+
+            network = new vis.Network(container, data, options);
+
+
+
+
+
+
+            return network;
+
+        }
+
+        drawGraph();
+
+    </script>
+
 
     <div class="bottombar">
         <span class="commands">
@@ -108,20 +323,10 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
             <div class="dot"></div>
             <div class="dot"></div>
             <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
         </span>
     </div>
 
 </div>
-
 <script>
     var slideIndex = 1;
     showSlides(slideIndex);
@@ -136,7 +341,7 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
 
     function showSlides(n) {
       var i;
-      var slides = document.getElementsByClassName("steps");
+      var slides = document.getElementsByClassName("networks");
       var dots = document.getElementsByClassName("dot");
       if (n > slides.length) {slideIndex = 1}
       if (n < 1) {slideIndex = slides.length}
@@ -149,65 +354,7 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
       slides[slideIndex-1].style.display = "block";
       dots[slideIndex-1].className += " active";
     }
-
-    // initialize global variables.
-    var edges;
-    var nodes;
-    var network;
-    var container;
-    var options, data;
-
-
-    // This method is responsible for drawing the graph, returns the drawn network
-    function drawGraph() {
-        var container = document.getElementById('n');
-
-
-
-        // parsing and collecting nodes and edges from the python
-        nodes = new vis.DataSet([{"id": 1, "label": 1, "shape": "dot", "size": 10}, {"id": 14, "label": 14, "shape": "dot", "size": 10}, {"id": 8, "label": 8, "shape": "dot", "size": 10}, {"id": 15, "label": 15, "shape": "dot", "size": 10}, {"id": 16, "label": 16, "shape": "dot", "size": 10}, {"id": 9, "label": 9, "shape": "dot", "size": 10}, {"id": 10, "label": 10, "shape": "dot", "size": 10}, {"id": 11, "label": 11, "shape": "dot", "size": 10}, {"id": 12, "label": 12, "shape": "dot", "size": 10}, {"id": 17, "label": 17, "shape": "dot", "size": 10}, {"id": 3, "label": 3, "shape": "dot", "size": 10}, {"id": 13, "label": 13, "shape": "dot", "size": 10}, {"id": 20, "label": 20, "shape": "dot", "size": 10}, {"id": 5, "label": 5, "shape": "dot", "size": 10}, {"id": 2, "label": 2, "shape": "dot", "size": 10}, {"id": 4, "label": 4, "shape": "dot", "size": 10}, {"id": 6, "label": 6, "shape": "dot", "size": 10}, {"id": 7, "label": 7, "shape": "dot", "size": 10}, {"id": 19, "label": 19, "shape": "dot", "size": 10}, {"id": 18, "label": 18, "shape": "dot", "size": 10}]);
-        edges = new vis.DataSet([{"from": 1, "to": 14, "weight": 0.174}, {"from": 1, "to": 8, "weight": 0.174}, {"from": 1, "to": 15, "weight": 0.174}, {"from": 1, "to": 16, "weight": 0.174}, {"from": 1, "to": 9, "weight": 0.174}, {"from": 1, "to": 10, "weight": 0.174}, {"from": 1, "to": 11, "weight": 0.174}, {"from": 1, "to": 12, "weight": 0.174}, {"from": 1, "to": 17, "weight": 0.031}, {"from": 1, "to": 3, "weight": 0.031}, {"from": 1, "to": 13, "weight": 0.031}, {"from": 1, "to": 20, "weight": 0.031}, {"from": 1, "to": 5, "weight": 0.031}, {"from": 1, "to": 2, "weight": 0.031}, {"from": 1, "to": 4, "weight": 0.031}, {"from": 1, "to": 6, "weight": 0.031}, {"from": 1, "to": 7, "weight": 0.031}, {"from": 1, "to": 19, "weight": 0.031}, {"from": 14, "to": 8, "weight": 0.174}, {"from": 14, "to": 17, "weight": 0.174}, {"from": 14, "to": 5, "weight": 0.174}, {"from": 14, "to": 20, "weight": 0.174}, {"from": 14, "to": 3, "weight": 0.031}, {"from": 14, "to": 6, "weight": 0.031}, {"from": 14, "to": 9, "weight": 0.031}, {"from": 14, "to": 10, "weight": 0.031}, {"from": 14, "to": 12, "weight": 0.031}, {"from": 14, "to": 13, "weight": 0.031}, {"from": 14, "to": 18, "weight": 0.031}, {"from": 14, "to": 19, "weight": 0.031}, {"from": 14, "to": 7, "weight": 0.031}, {"from": 14, "to": 2, "weight": 0.031}, {"from": 14, "to": 16, "weight": 0.031}, {"from": 8, "to": 4, "weight": 0.174}, {"from": 8, "to": 18, "weight": 0.174}, {"from": 8, "to": 12, "weight": 0.174}, {"from": 8, "to": 15, "weight": 0.174}, {"from": 8, "to": 2, "weight": 0.031}, {"from": 8, "to": 3, "weight": 0.031}, {"from": 8, "to": 5, "weight": 0.031}, {"from": 8, "to": 6, "weight": 0.031}, {"from": 8, "to": 7, "weight": 0.031}, {"from": 8, "to": 10, "weight": 0.031}, {"from": 8, "to": 16, "weight": 0.031}, {"from": 8, "to": 9, "weight": 0.031}, {"from": 8, "to": 19, "weight": 0.031}, {"from": 8, "to": 13, "weight": 0.031}, {"from": 8, "to": 11, "weight": 0.031}, {"from": 15, "to": 13, "weight": 0.174}, {"from": 15, "to": 10, "weight": 0.174}, {"from": 15, "to": 16, "weight": 0.174}, {"from": 15, "to": 2, "weight": 0.031}, {"from": 15, "to": 3, "weight": 0.031}, {"from": 15, "to": 4, "weight": 0.031}, {"from": 15, "to": 5, "weight": 0.031}, {"from": 15, "to": 6, "weight": 0.031}, {"from": 15, "to": 11, "weight": 0.031}, {"from": 15, "to": 7, "weight": 0.031}, {"from": 15, "to": 18, "weight": 0.031}, {"from": 15, "to": 12, "weight": 0.031}, {"from": 15, "to": 20, "weight": 0.031}, {"from": 15, "to": 17, "weight": 0.031}, {"from": 16, "to": 12, "weight": 0.174}, {"from": 16, "to": 6, "weight": 0.174}, {"from": 16, "to": 2, "weight": 0.031}, {"from": 16, "to": 5, "weight": 0.031}, {"from": 16, "to": 7, "weight": 0.031}, {"from": 16, "to": 9, "weight": 0.031}, {"from": 16, "to": 4, "weight": 0.031}, {"from": 16, "to": 10, "weight": 0.031}, {"from": 16, "to": 18, "weight": 0.031}, {"from": 16, "to": 17, "weight": 0.031}, {"from": 2, "to": 11, "weight": 0.174}, {"from": 2, "to": 17, "weight": 0.174}, {"from": 2, "to": 20, "weight": 0.174}, {"from": 2, "to": 10, "weight": 0.174}, {"from": 2, "to": 7, "weight": 0.174}, {"from": 2, "to": 18, "weight": 0.174}, {"from": 2, "to": 6, "weight": 0.031}, {"from": 2, "to": 12, "weight": 0.031}, {"from": 2, "to": 4, "weight": 0.031}, {"from": 2, "to": 19, "weight": 0.031}, {"from": 2, "to": 13, "weight": 0.031}, {"from": 2, "to": 3, "weight": 0.031}, {"from": 2, "to": 5, "weight": 0.031}, {"from": 2, "to": 9, "weight": 0.031}, {"from": 11, "to": 6, "weight": 0.174}, {"from": 11, "to": 17, "weight": 0.174}, {"from": 11, "to": 19, "weight": 0.174}, {"from": 11, "to": 20, "weight": 0.174}, {"from": 11, "to": 4, "weight": 0.031}, {"from": 11, "to": 5, "weight": 0.031}, {"from": 11, "to": 7, "weight": 0.031}, {"from": 11, "to": 9, "weight": 0.031}, {"from": 11, "to": 10, "weight": 0.031}, {"from": 11, "to": 12, "weight": 0.031}, {"from": 11, "to": 18, "weight": 0.031}, {"from": 11, "to": 3, "weight": 0.031}, {"from": 17, "to": 9, "weight": 0.174}, {"from": 17, "to": 3, "weight": 0.031}, {"from": 17, "to": 4, "weight": 0.031}, {"from": 17, "to": 6, "weight": 0.031}, {"from": 17, "to": 10, "weight": 0.031}, {"from": 17, "to": 13, "weight": 0.031}, {"from": 17, "to": 19, "weight": 0.031}, {"from": 17, "to": 20, "weight": 0.031}, {"from": 20, "to": 19, "weight": 0.174}, {"from": 20, "to": 4, "weight": 0.031}, {"from": 20, "to": 6, "weight": 0.031}, {"from": 20, "to": 10, "weight": 0.031}, {"from": 20, "to": 12, "weight": 0.031}, {"from": 20, "to": 13, "weight": 0.031}, {"from": 20, "to": 18, "weight": 0.031}, {"from": 20, "to": 3, "weight": 0.031}, {"from": 10, "to": 6, "weight": 0.174}, {"from": 10, "to": 9, "weight": 0.174}, {"from": 10, "to": 19, "weight": 0.174}, {"from": 10, "to": 3, "weight": 0.031}, {"from": 10, "to": 5, "weight": 0.031}, {"from": 10, "to": 7, "weight": 0.031}, {"from": 10, "to": 18, "weight": 0.031}, {"from": 10, "to": 12, "weight": 0.031}, {"from": 10, "to": 13, "weight": 0.031}, {"from": 3, "to": 6, "weight": 0.174}, {"from": 3, "to": 13, "weight": 0.174}, {"from": 3, "to": 18, "weight": 0.174}, {"from": 3, "to": 4, "weight": 0.174}, {"from": 3, "to": 5, "weight": 0.174}, {"from": 3, "to": 12, "weight": 0.031}, {"from": 3, "to": 7, "weight": 0.031}, {"from": 3, "to": 19, "weight": 0.031}, {"from": 3, "to": 9, "weight": 0.031}, {"from": 6, "to": 5, "weight": 0.174}, {"from": 6, "to": 13, "weight": 0.174}, {"from": 6, "to": 7, "weight": 0.174}, {"from": 6, "to": 19, "weight": 0.174}, {"from": 6, "to": 4, "weight": 0.031}, {"from": 6, "to": 12, "weight": 0.031}, {"from": 6, "to": 18, "weight": 0.031}, {"from": 13, "to": 9, "weight": 0.174}, {"from": 13, "to": 4, "weight": 0.031}, {"from": 13, "to": 7, "weight": 0.031}, {"from": 13, "to": 12, "weight": 0.031}, {"from": 13, "to": 19, "weight": 0.031}, {"from": 13, "to": 18, "weight": 0.031}, {"from": 18, "to": 12, "weight": 0.174}, {"from": 18, "to": 4, "weight": 0.031}, {"from": 18, "to": 5, "weight": 0.031}, {"from": 18, "to": 19, "weight": 0.031}, {"from": 4, "to": 5, "weight": 0.174}, {"from": 4, "to": 7, "weight": 0.174}, {"from": 4, "to": 12, "weight": 0.174}, {"from": 4, "to": 9, "weight": 0.031}, {"from": 5, "to": 19, "weight": 0.174}, {"from": 5, "to": 9, "weight": 0.031}, {"from": 5, "to": 7, "weight": 0.031}, {"from": 7, "to": 9, "weight": 0.174}, {"from": 7, "to": 12, "weight": 0.031}, {"from": 7, "to": 19, "weight": 0.031}, {"from": 12, "to": 9, "weight": 0.031}, {"from": 19, "to": 9, "weight": 0.031}]);
-
-        // adding nodes and edges to the graph
-        data = {nodes: nodes, edges: edges};
-
-        var options = {
-            "configure": {
-                "enabled": false
-            },
-            "edges": {
-                "color": {
-                    "inherit": true
-                },
-                "smooth": {
-                    "enabled": false,
-                    "type": "continuous"
-                }
-            },
-            "interaction": {
-                "dragNodes": true,
-                "hideEdgesOnDrag": false,
-                "hideNodesOnDrag": false
-            },
-            "physics": {
-                "enabled": true,
-                "stabilization": {
-                    "enabled": true,
-                    "fit": true,
-                    "iterations": 1000,
-                    "onlyDynamicEdges": false,
-                    "updateInterval": 50
-                }
-            }
-        };
-
-        network = new vis.Network(container, data, options);
-
-        return network;
-    }
-
-    drawGraph();
-
 </script>
+
 </body>
 </html>

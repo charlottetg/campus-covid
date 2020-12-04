@@ -100,7 +100,12 @@ def simulationsetup():
     #we have a TITLE part of pyvis
     #node.title can be an html element-- could that be like an opaque box that shows it a lil better
 
+    for i in range(len(results[0])):
+        net = Network()
+        net.from_nx(results[0][i])
+        net.write_html(str(i)+".html")
 
+    daygraph=Network()
 
 
     return day(results, 1)
@@ -117,6 +122,7 @@ def day(results, i):
 @app.route("/h")
 def h():
     return render_template('hello.html')
+
 
 
 if __name__ == "__main__":
