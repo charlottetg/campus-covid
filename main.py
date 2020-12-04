@@ -10,9 +10,9 @@ from Person import Person
 from Graph import Graph
 
 # var
-num_students = 20
+num_students = 2275
 num_close = 4
-num_tang = 10
+num_tang = 5
 
 #constants
 PROB_CLOSE = .174
@@ -78,7 +78,7 @@ def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptoma
     quarantined = []
 
     # this will be a 1D array
-    graphs = []
+    graphs = [graph]
 
     for i in range(num_runs):
         current_run_graph = deepcopy(graph)
@@ -98,7 +98,7 @@ def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptoma
             current_quarantined.append(current_run_graph.num_quarantined())
 
             if i == 0: # only save first run graphs
-                current_day_graph = deepcopy(current_run_graph).networkx_graph() # want as a networkx graph
+                current_day_graph = deepcopy(current_run_graph) # no longer as networkx graph
                 graphs.append(current_day_graph) # kind of weird, but works!
 
         healthy.append(current_healthy)
@@ -121,21 +121,30 @@ def get_stats(healthy, asymptomatic, quarantined):
     return graph_stats, average_stats, standard_devs
 
 
-results = run_simulation(random_graph, 2, 3, 21, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC, False)
+days = 7
+runs = 1000
+fraction_tested_per_day = 7
+results = run_simulation(random_graph, runs, days, fraction_tested_per_day, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC, False)
+
 graphs = results[0]
+first_graph = graphs[0]
+last_graph = graphs[days]
+first_graph.show_graph(PROB_CLOSE, PROB_TANG, random_pos)
+last_graph.show_graph(PROB_CLOSE, PROB_TANG, random_pos)
+
 healthy = results[1]
 asymptomatic = results[2]
 quarantined = results[3]
 
-print(np.array(healthy))
-print(np.array(asymptomatic))
-print(np.array(quarantined))
+np.savetxt('full_healthy.csv', np.array(healthy))
+np.savetxt('full_asymptomatic.csv', np.array(asymptomatic))
+np.savetxt('full_quarantined.csv', np.array(quarantined))
 
 stats = get_stats(healthy, asymptomatic, quarantined)
 graph_stats = stats[0]
 average_stats = stats[1]
 standard_devs = stats[2]
 
-print(graph_stats)
-print(average_stats)
-print(standard_devs)
+np.savetxt('graph_stats.csv', graph_stats)
+np.savetxt('average_stats.csv', average_stats)
+np.savetxt('standard_devs.csv', standard_devs)
