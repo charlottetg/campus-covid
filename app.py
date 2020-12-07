@@ -9,9 +9,7 @@ import networkx as nx
 app = Flask(__name__)
 
 # var
-num_students = 20
-num_close = 4
-num_tang = 10
+
 
 #constants
 PROB_CLOSE = .174
@@ -19,7 +17,7 @@ PROB_TANG = .031
 MEAN_SYMPTOMATIC = 4.98
 STANDARD_DEV_SYMPTOMATIC = 4.83
 
-def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptomatic, standard_dev_symptomatic, all_contacts):
+def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptomatic, standard_dev_symptomatic, all_contacts, num_students=20):
     """
     Runs a simulated spread, returns [graphs, healthy, asymptomatic, quarantined]
     graphs is array of networkx graphs for each day of the simulation *for the first run*
@@ -60,6 +58,11 @@ def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptoma
         quarantined.append(current_quarantined)
 
     return graphs, healthy, asymptomatic, quarantined
+    #
+    # a simulation consists of:
+    #        -   a set of relationships within the graph
+    #        -   a set of peoples statuses for each day
+    # so maybe we want a set of simulations?
 
 
 def get_stats(healthy, asymptomatic, quarantined):
@@ -74,10 +77,15 @@ def get_stats(healthy, asymptomatic, quarantined):
 
     return graph_stats, average_stats, standard_devs
 
-
 @app.route("/")
-def simulationsetup():
+def formpage():
+    return render_template("form.html")
 
+@app.route("/action_page.php")
+def seriouslyjankhacking():
+    num_tang = int(request.args.get('t'))
+    num_close = int(request.args.get('c'))
+    num_students = int(request.args.get('s'))
 
     random_graph = Graph({})
     random_graph.add_contacts(num_close, PROB_CLOSE, num_students)
@@ -87,33 +95,38 @@ def simulationsetup():
     random_pos = nx.spring_layout(random_graph.networkx_graph())
 
 
-    results = run_simulation(random_graph, 2, 3, 21, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC, False)
+    results = run_simulation(random_graph, 2, 3, 21, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC, False, num_students)
     #now we have pathways to get to different days?
 
     #user input tells us which day(results, __) to return
+
+    #we have a TITLE part of pyvis
+    #node.title can be an html element-- could that be like an opaque box that shows it a lil better
+    #print(results)
+    #return results
+
+    # for i in range(len(results[0])):
+    #     net = Network()
+    #     net.from_nx(results[0][i])
+    #     net.write_html("templates/"+str(i)+".html")
+    # return render_template(str(i)+".html")
+
+
     return day(results, 1)
 
 def day(results, i):
     daygraph = Network()
     daygraph.from_nx(results[0][i])
-    daygraph.show("templates/"+str(i) + ".html")
+    #daygraph.show_buttons()
+    #daygraph.show("templates/"+str(i) + ".html")
+    daygraph.save_graph("templates/"+str(i) + ".html")
     return render_template(str(i)+".html")
 
-"""
-@app.route("/<id>")
-def persondata(id):
-    iid = int(id)
-    p = Person([[iid, 0],[iid, -1],[2,.5],[3,.5]])
-    if (p.state==-1):
-        return "person " + id + " is healthy!"
-    else:
-        return jsonify(p.contacts)
 
-@app.route("/<day>")
-def time(day):
-    return "it is now day: " + day
+@app.route("/h")
+def h():
+    return render_template('hello.html')
 
-"""
 
 
 if __name__ == "__main__":
