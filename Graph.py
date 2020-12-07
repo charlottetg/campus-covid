@@ -18,7 +18,7 @@ class Graph:
     Attributes
     __________
     ids_dict: dict
-        contains people's IDs as (integer) keys and the associated Person objects as values
+        contains Person IDs as (integer) keys and the associated Person objects as values
     day: int
         represents the number of days since the first COVID-19 case
     log: list
@@ -26,11 +26,11 @@ class Graph:
     Methods
     _______
     networkx_graph
-        Return a Networkx graph of the given Graph Object.
+        Return a Networkx graph of the given Graph object.
     show_graph
         Display a Networkx graph with node and edge colors representing COVID-19 states and edge weights representing contact types.
     individual_spread
-        Probabalistically spreads COVID-19 from an asymptomatic person to their contacts.
+        Probabalistically spread COVID-19 from an asymptomatic person to their contacts.
     graph_spread
         To be called on a Graph every time step: increment day and spread covid from infected individuals.
     num_healthy
@@ -54,14 +54,14 @@ class Graph:
         Parameters
         __________
         ids_dict: dict
-            contains people's IDs as (integer) keys and the associated Person objects as values
+            contains Person IDs as (integer) keys and the associated Person objects as values
         """
         self.ids_dict = ids_dict
         self.day = 0
         self.log = []
 
     def networkx_graph(self):
-        """ Return a Networkx graph of the given Graph Object.
+        """ Return a Networkx graph of the given Graph object.
         """
         g = nx.Graph()
         people_ids = self.ids_dict.keys()
@@ -116,7 +116,7 @@ class Graph:
         plt.show()
 
     def individual_spread(self, spreader_id, mean_symptomatic, standard_dev_symptomatic):
-        """ Probabalistically spreads COVID-19 from an asymptomatic person to their contacts.
+        """ Probabalistically spread COVID-19 from an asymptomatic person to their contacts.
         Parameters
         __________
         spreader_id: int

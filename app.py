@@ -1,3 +1,7 @@
+"""
+Anna Spiro and Charlotte Gray
+"""
+
 from flask import Flask, request, jsonify, render_template
 from Person import Person
 from Graph import Graph
@@ -8,8 +12,12 @@ from pyvis.network import Network
 import networkx as nx
 app = Flask(__name__)
 
-# var
-
+# variables
+"""
+num_students = 2275
+num_close = 4
+num_tang = 5
+"""
 
 #constants
 PROB_CLOSE = .174

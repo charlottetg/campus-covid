@@ -9,28 +9,25 @@ import math as math
 class Person:
     """
     A class used to represent an individual Person and keep track of their contacts and state.
-    This class is used in the Graph class as the basis for the graph model of campus.
-
     Attributes
     __________
     contacts: dict
-        a person's contacts are (integer) keys, and the types of contact
+        a person's contacts are (integer) keys, and the type of contact
         (quantified through transmission pobability) are (float) values
     state: int
         encodes a person's COVID-19 status:
         -1 = healthy, >= 0 = infected and asymptomatic, -2 = quarantined.
-        For asymptomatic individuals, the integer represents the number of time steps
-        before they will show symptoms.
+        For asymptomatic individuals, the positive integer represents the number of time steps
+        before the Person will show symptoms.
     patient_zero: Boolean
         for visualization purposes, this keeps track of whether the individual
         is patient zero (True = yes, False = no)
-
     Methods
     _______
     get_covid
         If the individual is healthy, set their state to the number of time steps before they become symptomatic.
     get_tested
-         If the individual is asymptomatic, set them to quarantine and return True.
+        If the individual is asymptomatic, set them to quarantine and return True.
     """
 
     def __init__(self, contacts):
@@ -38,8 +35,8 @@ class Person:
         Parameters
         __________
         contacts: dict
-            A person's contacts are integer keys, and the types of contact
-            (quantified through transmission pobability) are float values
+            a person's contacts are (integer) keys, and the type of contact
+            (quantified through transmission pobability) are (float) values
         """
         self.contacts = contacts
         self.state = -1

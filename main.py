@@ -57,55 +57,6 @@ social_graph.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  
 social_graph.ids_dict[1].patient_zero = True
 social_pos = nx.spring_layout(social_graph.networkx_graph())
 
-# create graph with randomly assigned (mutual) close and tang contacts
-random_graph = Graph({})
-random_graph.add_contacts(num_close, PROB_CLOSE, num_students)
-random_graph.add_contacts(num_tang, PROB_TANG, num_students)
-random_graph.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  # give one person covid
-random_graph.ids_dict[1].patient_zero = True
-random_pos = nx.spring_layout(random_graph.networkx_graph())
-
-def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptomatic, standard_dev_symptomatic, all_contacts):
-    """
-    Runs a simulated spread, returns [graphs, healthy, asymptomatic, quarantined]
-    graphs is array of networkx graphs for each day of the simulation *for the first run*
-    note: all_contacts is a Boolean
-    """
-
-    # dimensions of these will be (num_rows, days)
-    healthy = []
-    asymptomatic = []
-    quarantined = []
-
-    # this will be a 1D array
-    graphs = [graph]
-
-    for i in range(num_runs):
-        current_run_graph = deepcopy(graph)
-
-        # 1D arrays of length j
-        current_healthy = [num_students-1]
-        current_asymptomatic = [1]
-        current_quarantined = [0]
-
-        for j in range(days):
-            current_run_graph.graph_spread(mean_symptomatic, standard_dev_symptomatic)
-            people_to_test = random.sample(list(range(1, num_students)), round(num_students / fraction_tested_per_day))
-            current_run_graph.dynamic_test(people_to_test, all_contacts, PROB_CLOSE)
-
-            current_healthy.append(current_run_graph.num_healthy())
-            current_asymptomatic.append(current_run_graph.num_asymptomatic())
-            current_quarantined.append(current_run_graph.num_quarantined())
-
-            if i == 0: # only save first run graphs
-                current_day_graph = deepcopy(current_run_graph) # no longer as networkx graph
-                graphs.append(current_day_graph) # kind of weird, but works!
-
-        healthy.append(current_healthy)
-        asymptomatic.append(current_asymptomatic)
-        quarantined.append(current_quarantined)
-
-    return graphs, healthy, asymptomatic, quarantined
 
 
 def get_stats(healthy, asymptomatic, quarantined):
