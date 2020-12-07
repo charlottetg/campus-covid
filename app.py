@@ -99,7 +99,7 @@ def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptoma
 
 def get_stats(healthy, asymptomatic, quarantined):
     """
-    Takes in healthy, asymptomatic, quarantined from run_simulation
+    Takes in healthy, asymptomatic, quarantined (all run data) from run_simulation
     return np arrays: graph stats is stats of [healthy, asymptomatic, quarantined] from first run
     """
 
