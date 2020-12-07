@@ -146,7 +146,7 @@ class Graph:
             Standard deviation number of days until an individual becomes symptomatic
         """
 
-        self.log.append("day " + str(self.day))
+        self.log.append("day " + str(self.day)) #CAN I DO
 
         # make a list of IDs who start off asymptomatic
         current_spreaders = []

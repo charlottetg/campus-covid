@@ -17,6 +17,30 @@ PROB_TANG = .031
 MEAN_SYMPTOMATIC = 4.98
 STANDARD_DEV_SYMPTOMATIC = 4.83
 
+# def single_simulation(graph, fraction_tested_per_day):
+#     """
+#     runs a simulated spread on :param graph:. tests according to :param fraction_tested_per_day:.
+#     :return: days.
+#     days[i] is a set of the info you need for day i. it includes:
+#         - people: [covid, quarantined, safe] lists of their ids.
+#         - log: array of strings that reflect covid trasmissions
+#
+#     This is for DRAWING the simulation in a way that is informative. This is not for the cumulative averaging type stuff.
+#     Edges from people with covid to their contacts will be colored reddish, showing the people that are at risk.
+#     """
+#     #day zero: everyone is safe.
+#     #day one: person has covid. 1 person should have covid, their contacts get marked at_risk.
+#     for j in range(10):
+#         graph.graph_spread(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
+#
+#         current_run_graph.graph_spread(mean_symptomatic, standard_dev_symptomatic)
+#         people_to_test = random.sample(list(range(1, num_students)), round(num_students / fraction_tested_per_day))
+#         current_run_graph.dynamic_test(people_to_test, all_contacts, PROB_CLOSE)
+#
+#         current_healthy.append(current_run_graph.num_healthy())
+#         current_asymptomatic.append(current_run_graph.num_asymptomatic())
+#         current_quarantined.append(current_run_graph.num_quarantined())
+
 def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptomatic, standard_dev_symptomatic, all_contacts, num_students=20):
     """
     Runs a simulated spread, returns [graphs, healthy, asymptomatic, quarantined]
@@ -77,56 +101,51 @@ def get_stats(healthy, asymptomatic, quarantined):
 
     return graph_stats, average_stats, standard_devs
 
+
+
+
+
+
+
+
 @app.route("/")
 def formpage():
     return render_template("form.html")
 
 @app.route("/action_page.php")
-def seriouslyjankhacking():
+def takingformdata():
     num_tang = int(request.args.get('t'))
     num_close = int(request.args.get('c'))
     num_students = int(request.args.get('s'))
 
-    random_graph = Graph({})
-    random_graph.add_contacts(num_close, PROB_CLOSE, num_students)
-    random_graph.add_contacts(num_tang, PROB_TANG, num_students)
-    random_graph.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  # give one person covid
-    random_graph.ids_dict[1].patient_zero = True
-    random_pos = nx.spring_layout(random_graph.networkx_graph())
+    campus = Graph({}) #campus object
+    campus.add_contacts(num_close, PROB_CLOSE, num_students)
+    campus.add_contacts(num_tang, PROB_TANG, num_students)
+
+    net = Network().from_nx(campus.networkx_graph()) #pyvis Network version of the campus with no info on who has covid or not
+    net.save_graph("templates/campus.html")
+    return render_template('campus.html') #if we had an array with the list of everyone daily statuses, we could
+
+    campus.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  # give one person covid
+    campus.ids_dict[1].patient_zero = True
+    random_pos = nx.spring_layout(campus.networkx_graph())
+
+    results = run_simulation(campus, 2, 3, 21, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC, False, num_students)
+    """
+    for i in range(4):
+        net = Network()
+        net.from_nx(results[0][i])
+        address = "templates/"+str(i)+".html"
+        net.write_html(address)
+        """
+    return render_template('singlesimulation.html')
+    #so now, for each graph what do we do?
+    #each of the graphs wil
 
 
-    results = run_simulation(random_graph, 2, 3, 21, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC, False, num_students)
-    #now we have pathways to get to different days?
-
-    #user input tells us which day(results, __) to return
-
-    #we have a TITLE part of pyvis
-    #node.title can be an html element-- could that be like an opaque box that shows it a lil better
-    #print(results)
-    #return results
-
-    # for i in range(len(results[0])):
-    #     net = Network()
-    #     net.from_nx(results[0][i])
-    #     net.write_html("templates/"+str(i)+".html")
-    # return render_template(str(i)+".html")
-
-
-    return day(results, 1)
-
-def day(results, i):
-    daygraph = Network()
-    daygraph.from_nx(results[0][i])
-    #daygraph.show_buttons()
-    #daygraph.show("templates/"+str(i) + ".html")
-    daygraph.save_graph("templates/"+str(i) + ".html")
-    return render_template(str(i)+".html")
-
-
-@app.route("/h")
-def h():
-    return render_template('hello.html')
-
+@app.route("/<template>")
+def templatedebug(template):
+    return render_template(template+'.html')
 
 
 if __name__ == "__main__":
