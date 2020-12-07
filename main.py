@@ -1,4 +1,10 @@
-# for testing
+"""
+Anna Spiro and Charlotte Gray
+Main: used for testing and data analysis
+"""
+
+from Person import Person
+from Graph import Graph
 
 import random
 import pandas as pd
@@ -6,11 +12,8 @@ import networkx as nx
 from copy import deepcopy
 import numpy as np
 
-from Person import Person
-from Graph import Graph
-
-# var
-num_students = 100
+# variables
+num_students = 2275
 num_close = 4
 num_tang = 5
 
@@ -20,8 +23,7 @@ PROB_TANG = .031
 MEAN_SYMPTOMATIC = 4.98
 STANDARD_DEV_SYMPTOMATIC = 4.83
 
-# build social_graph from Dash data
-"""
+# build social_graph from Prof. Dash NSCI 0401 social network data (for comparison)
 social_ids_dict = {}
 df = pd.read_excel('anonymous_classnetwork.xlsx')
 
@@ -54,7 +56,6 @@ social_graph = Graph(social_ids_dict)
 social_graph.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  # give one person covid
 social_graph.ids_dict[1].patient_zero = True
 social_pos = nx.spring_layout(social_graph.networkx_graph())
-"""
 
 # create graph with randomly assigned (mutual) close and tang contacts
 random_graph = Graph({})
@@ -63,7 +64,6 @@ random_graph.add_contacts(num_tang, PROB_TANG, num_students)
 random_graph.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  # give one person covid
 random_graph.ids_dict[1].patient_zero = True
 random_pos = nx.spring_layout(random_graph.networkx_graph())
-
 
 def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptomatic, standard_dev_symptomatic, all_contacts):
     """
@@ -122,8 +122,8 @@ def get_stats(healthy, asymptomatic, quarantined):
 
 
 days = 7
-runs = 1
-fraction_tested_per_day = 7
+runs = 1000
+fraction_tested_per_day = 21
 results = run_simulation(random_graph, runs, days, fraction_tested_per_day, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC, False)
 
 graphs = results[0]
