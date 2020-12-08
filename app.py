@@ -54,7 +54,7 @@ def single_simulation(campus, id, tests):
     return render_template('campus.html')
     """
     for i in range(0, len(networks)):
-        networks[i].save_graph("templates/"+ str(i)+".html")
+        networks[i].save_graph("static/"+ str(i)+".html")
     return render_template("singlesimulation.html", story=summary, clogs=campus.log_arrays(), t=d, networks=networks)
 
 def run_simulation(graph, num_runs, days, daily_tests, all_contacts):
@@ -143,10 +143,8 @@ def takingformdata():
 
 
 
-@app.route('/<day>', methods=['GET', 'POST']) #credit to www.realpython.com tutorial for http routing in python
+@app.route('/<day>', methods=['GET'])
 def uglytemplateday(day):
-    errors = []
-    results = {}
     if request.method == "GET":
             return render_template(day+'.html')
 

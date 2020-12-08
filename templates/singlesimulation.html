@@ -12,7 +12,8 @@ body {font-family: Helvetica, sans-serif; align: center; width: 700px}
 
 .networks {
     display: none;
-    height:500px;
+    height:600px;
+    width: 700px;
 }
 
 .log {
@@ -100,8 +101,8 @@ body {font-family: Helvetica, sans-serif; align: center; width: 700px}
 
 <div class="simulation-container">
     {%for i in range(0,t) %}
-    <div id = {{i}} class="networks"></div>
-    <a href="{{i}}">day {{i}} graph</a>
+    <link href="{{i}}.html" rel="import" />
+    <embed id = {{i}} class="networks" type="text/html" src="static/{{i}}.html">
     {% endfor %}
     <!-- 0.html gets seen with logs[0]
     <div id = "0h" class="networks"></div>
