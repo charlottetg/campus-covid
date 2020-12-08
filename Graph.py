@@ -11,6 +11,7 @@ import random
 from random import choice
 import numpy as np
 import math as math
+from pyvis.network import Network
 
 class Graph:
     """
@@ -77,8 +78,40 @@ class Graph:
                 g.add_edge(person_id, contact, weight = current_contacts[contact])
         return g
 
+    def pyvis_graph(self):
+        """
+        returns a pyvis graph with colors representative of people's statuses
+        :return:
+        """
+        campus = Network(directed=False, heading="campus")
+        for person_id in self.ids_dict:
+            s = self.ids_dict[person_id].state
+            if s==-1:
+                c = "black"
+            elif s>0:
+                c = "red"
+                #"title" appears on hover!!!
+            else:
+                c = "yellow"
+                #title appears on hover!
+            campus.add_node(person_id, color=c, size=3)
+
+        #we want edges to inherit color from the FROM node, so we start with the quarantined nodes, then the
+        # asymptomatic spreaders, then the healthy nodes.
+        for id in self.quarantined():
+            for contact in self.ids_dict[id].contacts:
+                campus.add_edge(id, contact)
+        for id in self.asymptomatic():
+            for contact in self.ids_dict[id].contacts:
+                campus.add_edge(id, contact)
+        for id in self.healthy():
+            for contact in self.ids_dict[id].contacts:
+                campus.add_edge(id, contact)
+        campus.inherit_edge_colors(True)
+        return campus
+
     def show_graph(self, prob_close, prob_tang, pos):
-        """ Display a Networkx graph with node and edge colors representing COVID-19 states and edge weights representing contact types.
+        """ Display a Networkx graph with node and edge colors representing COVID-19 states and edge weights representing contact types. for debugging purposes.
         Parameters
         __________
         prob_close: float
@@ -145,8 +178,7 @@ class Graph:
         standard_dev_symptomatic: float
             Standard deviation number of days until an individual becomes symptomatic
         """
-
-        self.log.append("day " + str(self.day)) #CAN I DO
+        self.log.append(self.day)
 
         # make a list of IDs who start off asymptomatic
         current_spreaders = []
@@ -170,16 +202,33 @@ class Graph:
         """
         return len([person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state == -1])
 
+    def healthy(self):
+        """
+        :return: array of ids of healthy people in the graph
+        """
+        return [person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state == -1]
+
     def num_asymptomatic(self):
         """Return number of asymptomatic Person objects in a graph.
         """
         return len([person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state >= 0])
+
+    def asymptomatic(self):
+        """
+        :return: array of ids of asymptomatic people in the graph
+        """
+        return [person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state >= 0]
 
     def num_quarantined(self):
         """Return number of quarantined Person objects in a graph.
         """
         return len([person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state == -2])
 
+    def quarantined(self):
+        """
+        :return: array of ids of quarantined people in the graph
+        """
+        return [person_id for person_id in self.ids_dict.keys() if self.ids_dict[person_id].state == -2]
 
     def dynamic_test(self, ids_to_test, all_contacts, prob_close):
         """Test a list of people IDs, contact trace if a positive case is found.
@@ -190,25 +239,20 @@ class Graph:
         all_contacts: Boolean
             whether to test all contacts or just close contacts: if True, contact trace all contacts
         """
+        p = 0
         for id in ids_to_test:
             person = self.ids_dict[id]
             if person.get_tested(): # asymptomatic case found
-                self.log.append(str(id) + " tested positive and quarantined")
+                p +=1
+                self.log.append(str(id) + " tested positive and quarantined. Contact tracing...")
 
                 for contact_id in person.contacts:
                     if all_contacts: # contact trace tang contacts as well as close contacts
-                        if self.ids_dict[contact_id].get_tested(): # tested positive
-                            self.log.append(str(contact_id) + " tested positive and quarantined (from contact tracing)")
-                        else:
-                            self.log.append(str(contact_id) + " tested negative and quarantined (from contact tracing)")
+                        self.ids_dict[contact_id].get_tested()
                     else:
                         if person.contacts[contact_id] == prob_close: # only contact trace close contacts
-                            if self.ids_dict[contact_id].get_tested(): # tested positive
-                                self.log.append(str(contact_id) + " tested positive and quarantined (from contact tracing)")
-                            else:
-                                self.log.append(str(contact_id) + " tested negative and quarantined (from contact tracing)")
-            else:
-                self.log.append(str(id) + " tested negative")
+                            self.ids_dict[contact_id].get_tested() # test close contacts
+        self.log.append("random testing yielded " + str(len(ids_to_test)-p) + " negative tests.")
 
     def add_contacts(self, num_contacts, prob_contacts, num_students):
         """Add contacts with a given probabilty to Person objects in Graph such that contacts are mutual.
@@ -286,3 +330,17 @@ class Graph:
         print("asymptomatic: " + str(len(asymptomatic)))
         print("quarantined: " + str(len(quarantined)))
         print("\n")
+
+    def log_arrays(self):
+        """
+        breaks up the logs into days
+        """
+        logarrays = [["No one has covid yet"], ["1 gets covid"]]
+        chunk = []
+        for i in range(1, len(self.log)):
+            if type(self.log[i])==int:
+                logarrays.append(chunk)
+                chunk = []
+            else:
+                chunk.append(self.log[i])
+        return logarrays

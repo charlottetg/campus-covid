@@ -1,9 +1,9 @@
 """
 Anna Spiro and Charlotte Gray
 """
-
+import requests
 from flask import Flask, request, jsonify, render_template
-from Person import Person
+import numpy as np
 from Graph import Graph
 from copy import deepcopy
 import pandas as pd
@@ -12,57 +12,61 @@ from pyvis.network import Network
 import networkx as nx
 app = Flask(__name__)
 
-# variables
-"""
-num_students = 2275
-num_close = 4
-num_tang = 5
-"""
-
 #constants
 PROB_CLOSE = .174
 PROB_TANG = .031
 MEAN_SYMPTOMATIC = 4.98
 STANDARD_DEV_SYMPTOMATIC = 4.83
 
-# def single_simulation(graph, fraction_tested_per_day):
-#     """
-#     runs a simulated spread on :param graph:. tests according to :param fraction_tested_per_day:.
-#     :return: days.
-#     days[i] is a set of the info you need for day i. it includes:
-#         - people: [covid, quarantined, safe] lists of their ids.
-#         - log: array of strings that reflect covid trasmissions
-#
-#     This is for DRAWING the simulation in a way that is informative. This is not for the cumulative averaging type stuff.
-#     Edges from people with covid to their contacts will be colored reddish, showing the people that are at risk.
-#     """
-#     #day zero: everyone is safe.
-#     #day one: person has covid. 1 person should have covid, their contacts get marked at_risk.
-#     for j in range(10):
-#         graph.graph_spread(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
-#
-#         current_run_graph.graph_spread(mean_symptomatic, standard_dev_symptomatic)
-#         people_to_test = random.sample(list(range(1, num_students)), round(num_students / fraction_tested_per_day))
-#         current_run_graph.dynamic_test(people_to_test, all_contacts, PROB_CLOSE)
-#
-#         current_healthy.append(current_run_graph.num_healthy())
-#         current_asymptomatic.append(current_run_graph.num_asymptomatic())
-#         current_quarantined.append(current_run_graph.num_quarantined())
-
-def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptomatic, standard_dev_symptomatic, all_contacts, num_students=20):
+def single_simulation(campus, id, tests):
     """
-    Runs a simulated spread, returns [graphs, healthy, asymptomatic, quarantined]
-    graphs is array of networkx graphs for each day of the simulation *for the first run*
+    :param graph: campus!
+    :param id: id of person to get first covid
+    :return: [array of pyvis networks, array of logs]
+    """
+    students = len(campus.ids_dict)
+    networks = []
+    networks.append(campus.pyvis_graph())
+
+    d = 1
+    campus.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  # give one person covid
+    networks.append(campus.pyvis_graph())
+    asymptomatic = campus.asymptomatic()
+    quarantined = campus.quarantined()
+
+    while campus.num_asymptomatic()>0:
+        d +=1
+        asymptomatic += campus.asymptomatic()
+        quarantined += campus.quarantined()
+        campus.graph_spread(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
+        people_to_test = random.sample(list(range(1, students)), tests)
+        campus.dynamic_test(people_to_test, False, PROB_CLOSE)
+        networks.append(campus.pyvis_graph())
+
+    asymptomatic = np.unique(asymptomatic)
+    quarantined = np.unique(quarantined)
+    summary = "This outbreak, from the first case to the final case being caught, lasted a total of " + str(d) + " days. Over the course of the outbreak, the college administered "
+    summary += "T"
+    summary += " tests. " + str(len(asymptomatic)) + " out of " + str(students) + " students contracted covid during the outbreak. " + str(len(quarantined)) + " students had to quarantine at some point during the oubreak. That makes for a total of " + str(7*len(quarantined)) + " days spent in quarantine by students."
+
+    """
+    net.save_graph("templates/campus.html")
+    return render_template('campus.html')
+    """
+    for i in range(0, len(networks)):
+        networks[i].save_graph("templates/"+ str(i)+".html")
+    return render_template("singlesimulation.html", story=summary, clogs=campus.log_arrays(), t=d)
+
+def run_simulation(graph, num_runs, days, daily_tests, all_contacts):
+    """
+    Runs multiple iterations of a simulated spread, returns [healthy, asymptomatic, quarantined]
     note: all_contacts is a Boolean
     """
-
+    num_students = len(graph.ids_dict)
     # dimensions of these will be (num_rows, days)
     healthy = []
     asymptomatic = []
     quarantined = []
-
-    # this will be a 1D array
-    graphs = [graph]
 
     for i in range(num_runs):
         current_run_graph = deepcopy(graph)
@@ -73,28 +77,19 @@ def run_simulation(graph, num_runs, days, fraction_tested_per_day, mean_symptoma
         current_quarantined = [0]
 
         for j in range(days):
-            current_run_graph.graph_spread(mean_symptomatic, standard_dev_symptomatic)
-            people_to_test = random.sample(list(range(1, num_students)), round(num_students / fraction_tested_per_day))
+            current_run_graph.graph_spread(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
+            people_to_test = random.sample(list(range(1, num_students)), daily_tests)
             current_run_graph.dynamic_test(people_to_test, all_contacts, PROB_CLOSE)
 
             current_healthy.append(current_run_graph.num_healthy())
             current_asymptomatic.append(current_run_graph.num_asymptomatic())
             current_quarantined.append(current_run_graph.num_quarantined())
 
-            if i == 0: # only save first run graphs
-                current_day_graph = deepcopy(current_run_graph).networkx_graph() # want as a networkx graph
-                graphs.append(current_day_graph) # kind of weird, but works!
-
         healthy.append(current_healthy)
         asymptomatic.append(current_asymptomatic)
         quarantined.append(current_quarantined)
 
-    return graphs, healthy, asymptomatic, quarantined
-    #
-    # a simulation consists of:
-    #        -   a set of relationships within the graph
-    #        -   a set of peoples statuses for each day
-    # so maybe we want a set of simulations?
+    return {"healthy":healthy, "asymptomatic":asymptomatic, "quarantined":quarantined}
 
 
 def get_stats(healthy, asymptomatic, quarantined):
@@ -110,50 +105,46 @@ def get_stats(healthy, asymptomatic, quarantined):
     return graph_stats, average_stats, standard_devs
 
 
+@app.route('/', methods=['GET', 'POST']) #credit to www.realpython.com tutorial for http routing in python
+def home():
+    errors = []
+    results = {}
+    if request.method == "POST":
+        try:
+            url = request.form['url'] #url the user entered
+            r = requests.get(url)
+            print(r.text)
+        except:
+            errors.append(
+                "Unable to get URL. Please make sure it's valid and try again."
+            )
+    return render_template('form.html', errors=errors, results=results)
 
-
-
-
-
-
-@app.route("/")
-def formpage():
-    return render_template("form.html")
 
 @app.route("/action_page.php")
 def takingformdata():
     num_tang = int(request.args.get('t'))
     num_close = int(request.args.get('c'))
     num_students = int(request.args.get('s'))
+    tested_daily= int(request.args.get('tests'))
+    num_runs = int(request.args.get('mode'))
 
-    campus = Graph({}) #campus object
+    campus = Graph({})  # campus object
     campus.add_contacts(num_close, PROB_CLOSE, num_students)
     campus.add_contacts(num_tang, PROB_TANG, num_students)
 
-    net = Network().from_nx(campus.networkx_graph()) #pyvis Network version of the campus with no info on who has covid or not
-    net.save_graph("templates/campus.html")
-    return render_template('campus.html') #if we had an array with the list of everyone daily statuses, we could
+    if num_runs > 1: #if we're doing multiple simulations and getting aggregate data
+        campus.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  # give one person covid
+        campus.ids_dict[1].patient_zero = True
+        return jsonify(run_simulation(campus, num_runs, 7, tested_daily, False))
 
-    campus.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  # give one person covid
-    campus.ids_dict[1].patient_zero = True
-    random_pos = nx.spring_layout(campus.networkx_graph())
-
-    results = run_simulation(campus, 2, 3, 21, MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC, False, num_students)
-    """
-    for i in range(4):
-        net = Network()
-        net.from_nx(results[0][i])
-        address = "templates/"+str(i)+".html"
-        net.write_html(address)
-        """
-    return render_template('singlesimulation.html')
-    #so now, for each graph what do we do?
-    #each of the graphs wil
+    else:
+        return single_simulation(campus, 1, tested_daily)
 
 
-@app.route("/<template>")
-def templatedebug(template):
-    return render_template(template+'.html')
+@app.route("/<day>")
+def templatedebug(day):
+    return render_template(day+'.html', day)
 
 
 if __name__ == "__main__":

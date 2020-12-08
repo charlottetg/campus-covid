@@ -1,4 +1,4 @@
-<html>
+<div>
 <head>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
@@ -91,10 +91,17 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
 
 </head>
 
+<blockquote>{{story}}</blockquote>
+
+
 
 <div class="simulation-container">
-
-    <div id = "s" class="networks"></div>
+    {%for i in range(0,t) %}
+    <div id = {{i}} class="networks"></div>
+    <div class = "log" display="none">{{clogs[i]}}</div>
+    {% endfor %}
+    <!-- 0.html gets seen with logs[0]
+    <div id = "0h" class="networks"></div>
     <script type="text/javascript">
 
         // initialize global variables.
@@ -107,7 +114,7 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
         //idea: we get all of the containers. We draw the graph on all the containers. We edit slightly based on
         // This method is responsible for drawing the graph, returns the drawn network
         function drawGraph() {
-            var container = document.getElementById('s');
+            var container = document.getElementById('0');
 
 
 
@@ -168,7 +175,7 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
 
     </script>
 
-    <div id = "t" class = "networks"></div>
+    <div id = "1" class = "networks"></div>
     <script type="text/javascript">
 
         // initialize global variables.
@@ -181,7 +188,7 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
 
         // This method is responsible for drawing the graph, returns the drawn network
         function drawGraph() {
-            var container = document.getElementById('t');
+            var container = document.getElementById('1');
 
 
 
@@ -240,7 +247,7 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
         drawGraph();
 
     </script>
-
+    -->
 
     <div class="bottombar">
         <span class="commands">
@@ -248,8 +255,9 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
             <a class="next" onclick="plusSlides(1)">&#8680;</a>
         </span>
         <span class="progressbar">
-            <div class="dot"></div>
-            <div class="dot"></div>
+            {% for i in range(0,t) %}
+                <div class="dot"></div>
+            {% endfor %}
         </span>
     </div>
 
@@ -268,18 +276,26 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
 
     function showSlides(n) {
       var i;
-      var slides = document.getElementsByClassName("networks");
+      var graphs = document.getElementsByClassName("networks");
       var dots = document.getElementsByClassName("dot");
-      if (n > slides.length) {slideIndex = 1}
-      if (n < 1) {slideIndex = slides.length}
-      for (i = 0; i < slides.length; i++) {
-          slides[i].style.display = "none";
+      var logs = document.getElementsByClassName("log");
+
+      if (n > graphs.length) {slideIndex = 1}
+      if (n < 1) {slideIndex = graphs.length}
+
+      for (i = 0; i < graphs.length; i++) {
+          graphs[i].style.display = "none";
       }
       for (i = 0; i < dots.length; i++) {
           dots[i].className = dots[i].className.replace(" active", "");
       }
-      slides[slideIndex-1].style.display = "block";
+      for (i = 0; i< logs.length; i++){
+          logs[i].className = logs[i].className.replace(" active", "");
+      }
+
+      graphs[slideIndex-1].style.display = "block";
       dots[slideIndex-1].className += " active";
+      logs[slideIndex-1].className += " text";
     }
 </script>
 
