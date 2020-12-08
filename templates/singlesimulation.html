@@ -1,0 +1,167 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style>
+* {box-sizing: border-box}
+body {font-family: Helvetica, sans-serif; align: center; width: 700px}
+
+.networks {
+    display: none;
+    height:600px;
+    width: 700px;
+}
+
+.log {
+    display: none;
+}
+
+.simulation-container {
+  width: 700px;
+  height: 570px;
+  float: left;
+  margin: auto;
+}
+
+.bottombar {
+  width: 700px;
+  height:70px;
+  position:relative;
+}
+.commands{
+  height:70px;
+  width:130px;
+  position:absolute;
+  left: 0;
+}
+
+.progressbar {
+  height:37px;
+  width:560px;
+  position:absolute;
+  right: 0;
+  top: 0px;
+
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  color: gray;
+  font-size: 50px;
+  user-select: none;
+  position:absolute;
+}
+.prev{
+  left:10px
+}
+.next{
+  right:10px
+}
+/* On hover, make black */
+.prev:hover, .next:hover {
+  color: black
+}
+
+.dot {
+  cursor: pointer;
+  height: 10px;
+  width: 10px;
+  margin: 31px 15px 0px 0px;
+  display: inline-block;
+  position: relative;
+  background-color: gray;
+  border-radius: 10px 10px 10px 10px;
+
+}
+.active {
+  background-color: black;
+  border-radius: 10px 10px 10px 10px;
+}
+
+.text {
+  color: black;
+  font-size: 15px;
+  top:0;
+  width:100%;
+  display: block;
+}
+
+</style>
+
+</head>
+
+{{story}}
+
+
+
+<div class="simulation-container">
+    {%for i in range(0,t) %}
+    <link href="{{i}}.html" rel="import" />
+    <embed id = {{i}} class="networks" type="text/html" src="{{i}}">
+    {% endfor %}
+
+    <div class="bottombar">
+        <span class="commands">
+            <a class="prev" onclick="plusSlides(-1)">&#8678;</a>
+            <a class="next" onclick="plusSlides(1)">&#8680;</a>
+        </span>
+        <span class="progressbar">
+            {% for i in range(0,t) %}
+                <div class="dot"></div>
+            {% endfor %}
+        </span>
+
+    </div>
+    {%for item in clogs %}
+    <div display="none" class="log">
+        {% for line in item %}
+        {{ line }}<br>
+        {% endfor%}
+    </div>
+    {% endfor %}
+
+</div>
+<script>
+    var slideIndex = 1;
+    showSlides(slideIndex);
+
+    function plusSlides(n) {
+      showSlides(slideIndex += n);
+    }
+
+    function currentSlide(n) {
+      showSlides(slideIndex = n);
+    }
+
+    function showSlides(n) {
+      var i;
+      var graphs = document.getElementsByClassName("networks");
+      var dots = document.getElementsByClassName("dot");
+      var logs = document.getElementsByClassName("log");
+
+      if (n > graphs.length) {slideIndex = 1}
+      if (n < 1) {slideIndex = graphs.length}
+
+      for (i = 0; i < graphs.length; i++) {
+          graphs[i].style.display = "none";
+      }
+      for (i = 0; i < dots.length; i++) {
+          dots[i].className = dots[i].className.replace(" active", "");
+      }
+      for (i = 0; i< logs.length; i++){
+          logs[i].className = logs[i].className.replace(" text", "");
+      }
+
+      graphs[slideIndex-1].style.display = "block";
+      dots[slideIndex-1].className += " active";
+      logs[slideIndex-1].className += " text";
+    }
+</script>
+
+</body>
+</html>
