@@ -8,22 +8,26 @@
 
 <style>
 * {box-sizing: border-box}
-body {font-family: Helvetica, sans-serif; align: center; width: 500px}
+body {font-family: Helvetica, sans-serif; align: center; width: 700px}
 
 .networks {
     display: none;
     height:500px;
 }
 
+.log {
+    display: none;
+}
+
 .simulation-container {
-  width: 500px;
+  width: 700px;
   height: 570px;
   float: left;
   margin: auto;
 }
 
 .bottombar {
-  width: 500px;
+  width: 700px;
   height:70px;
   position:relative;
 }
@@ -36,7 +40,7 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
 
 .progressbar {
   height:37px;
-  width:360px;
+  width:560px;
   position:absolute;
   right: 0;
   top: 0px;
@@ -79,26 +83,25 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
 }
 
 .text {
-  color: black
+  color: black;
   font-size: 15px;
-  bottom:0;
+  top:0;
   width:100%;
-  position:absolute;
-  text-align: center;
+  display: block;
 }
 
 </style>
 
 </head>
 
-<blockquote>{{story}}</blockquote>
+{{story}}
 
 
 
 <div class="simulation-container">
     {%for i in range(0,t) %}
     <div id = {{i}} class="networks"></div>
-    <div class = "log" display="none">{{clogs[i]}}</div>
+    <a href="{{i}}">day {{i}} graph</a>
     {% endfor %}
     <!-- 0.html gets seen with logs[0]
     <div id = "0h" class="networks"></div>
@@ -145,14 +148,7 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
                     "hideNodesOnDrag": false
                 },
                 "physics": {
-                    "enabled": true,
-                    "stabilization": {
-                        "enabled": true,
-                        "fit": true,
-                        "iterations": 1000,
-                        "onlyDynamicEdges": false,
-                        "updateInterval": 50
-                    }
+                    "enabled": false,
                 }
             };
 
@@ -259,7 +255,15 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
                 <div class="dot"></div>
             {% endfor %}
         </span>
+
     </div>
+    {%for item in clogs %}
+    <div display="none" class="log">
+        {% for line in item %}
+        {{ line }}<br>
+        {% endfor%}
+    </div>
+    {% endfor %}
 
 </div>
 <script>
@@ -290,7 +294,7 @@ body {font-family: Helvetica, sans-serif; align: center; width: 500px}
           dots[i].className = dots[i].className.replace(" active", "");
       }
       for (i = 0; i< logs.length; i++){
-          logs[i].className = logs[i].className.replace(" active", "");
+          logs[i].className = logs[i].className.replace(" text", "");
       }
 
       graphs[slideIndex-1].style.display = "block";

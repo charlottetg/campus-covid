@@ -55,7 +55,7 @@ def single_simulation(campus, id, tests):
     """
     for i in range(0, len(networks)):
         networks[i].save_graph("templates/"+ str(i)+".html")
-    return render_template("singlesimulation.html", story=summary, clogs=campus.log_arrays(), t=d)
+    return render_template("singlesimulation.html", story=summary, clogs=campus.log_arrays(), t=d, networks=networks)
 
 def run_simulation(graph, num_runs, days, daily_tests, all_contacts):
     """
@@ -89,7 +89,7 @@ def run_simulation(graph, num_runs, days, daily_tests, all_contacts):
         asymptomatic.append(current_asymptomatic)
         quarantined.append(current_quarantined)
 
-    return {"healthy":healthy, "asymptomatic":asymptomatic, "quarantined":quarantined}
+    return {"healthy stats:":healthy, "asymptomatic stats:":asymptomatic, "quarantined stats (grouped by day and run):":quarantined}
 
 
 def get_stats(healthy, asymptomatic, quarantined):
@@ -142,9 +142,13 @@ def takingformdata():
         return single_simulation(campus, 1, tested_daily)
 
 
-@app.route("/<day>")
-def templatedebug(day):
-    return render_template(day+'.html', day)
+
+@app.route('/<day>', methods=['GET', 'POST']) #credit to www.realpython.com tutorial for http routing in python
+def uglytemplateday(day):
+    errors = []
+    results = {}
+    if request.method == "GET":
+            return render_template(day+'.html')
 
 
 if __name__ == "__main__":
