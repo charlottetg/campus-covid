@@ -25,12 +25,13 @@ def single_simulation(campus, id, tests):
     :return: [array of pyvis networks, array of logs]
     """
     students = len(campus.ids_dict)
-    networks = []
-    networks.append(campus.pyvis_graph())
+    campus.pyvis_graph().write_html("templates/0.html")
+
 
     d = 1
     campus.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  # give one person covid
-    networks.append(campus.pyvis_graph())
+    campus.pyvis_graph().write_html("templates/1.html")
+
     asymptomatic = campus.asymptomatic()
     quarantined = campus.quarantined()
 
@@ -41,21 +42,24 @@ def single_simulation(campus, id, tests):
         campus.graph_spread(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)
         people_to_test = random.sample(list(range(1, students)), tests)
         campus.dynamic_test(people_to_test, False, PROB_CLOSE)
-        networks.append(campus.pyvis_graph())
+        campus.pyvis_graph().write_html("templates/"+str(d)+".html")
+
+
 
     asymptomatic = np.unique(asymptomatic)
     quarantined = np.unique(quarantined)
-    summary = "This outbreak, from the first case to the final case being caught, lasted a total of " + str(d) + " days. Over the course of the outbreak, the college administered "
-    summary += "T"
-    summary += " tests. " + str(len(asymptomatic)) + " out of " + str(students) + " students contracted covid during the outbreak. " + str(len(quarantined)) + " students had to quarantine at some point during the oubreak. That makes for a total of " + str(7*len(quarantined)) + " days spent in quarantine by students."
+    summary = "This outbreak, from the first case to the final case being caught, lasted a total of " + str(d) +". "+ str(len(asymptomatic)) + " out of " + str(students) + " students contracted covid during the outbreak. " + str(len(quarantined)) + " students had to quarantine at some point during the oubreak. That makes for a total of " + str(7*len(quarantined)) + " days spent in quarantine by students."
 
     """
     net.save_graph("templates/campus.html")
     return render_template('campus.html')
-    """
+    
     for i in range(0, len(networks)):
-        networks[i].save_graph("static/"+ str(i)+".html")
-    return render_template("singlesimulation.html", story=summary, clogs=campus.log_arrays(), t=d, networks=networks)
+        networks[i].show_buttons()
+        m = networks[i]
+        networks[i].write_html("static/"+str(i)+".html")
+    """
+    return render_template("singlesimulation.html", story=summary, clogs=campus.log_arrays(), t=d)
 
 def run_simulation(graph, num_runs, days, daily_tests, all_contacts):
     """
@@ -132,6 +136,7 @@ def takingformdata():
     campus = Graph({})  # campus object
     campus.add_contacts(num_close, PROB_CLOSE, num_students)
     campus.add_contacts(num_tang, PROB_TANG, num_students)
+    campus.layouthelper()
 
     if num_runs > 1: #if we're doing multiple simulations and getting aggregate data
         campus.ids_dict[1].get_covid(MEAN_SYMPTOMATIC, STANDARD_DEV_SYMPTOMATIC)  # give one person covid
@@ -146,7 +151,7 @@ def takingformdata():
 @app.route('/<day>', methods=['GET'])
 def uglytemplateday(day):
     if request.method == "GET":
-            return render_template(day+'.html')
+            return render_template(str(day)+'.html')
 
 
 if __name__ == "__main__":

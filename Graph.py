@@ -24,6 +24,7 @@ class Graph:
         represents the number of days since the first COVID-19 case
     log: list
         list of strings that are a written description of what has happened to Person objects in the graph throughout the COVID-19 spread
+    layout: random spring_layout of graph
     Methods
     _______
     networkx_graph
@@ -78,23 +79,41 @@ class Graph:
                 g.add_edge(person_id, contact, weight = current_contacts[contact])
         return g
 
+    def layouthelper(self):
+        """
+        generates networkx graph
+        gets spring layout
+        saves this info
+        :return:
+        """
+        l = nx.spring_layout(self.networkx_graph())
+        newl = {}
+        for node in l:
+            x = (l[node][0]+1)/2
+            y = (l[node][1]+1)/2
+            x = int(500.0*x)
+            y = int(500.0*y)
+            newl[node] = [x, y]
+
+        self.layout=newl
+        print(self.layout)
+
     def pyvis_graph(self):
         """
         returns a pyvis graph with colors representative of people's statuses
         :return:
         """
-        campus = Network(directed=False, heading="campus")
+        layout = self.layout
+        campus = Network(directed=False, heading="")
         for person_id in self.ids_dict:
             s = self.ids_dict[person_id].state
             if s==-1:
-                c = "black"
+                campus.add_node(person_id, color="black", size=3, title="no covid", x=layout[person_id][0], y=layout[person_id][1])
+
             elif s>0:
-                c = "red"
-                #"title" appears on hover!!!
+                campus.add_node(person_id, color="red", size=3, title="covid positive and spreading!", x=layout[person_id][0], y=layout[person_id][1])
             else:
-                c = "yellow"
-                #title appears on hover!
-            campus.add_node(person_id, color=c, size=3)
+                campus.add_node(person_id, color="gray", size=3, title="quarantined",x=layout[person_id][0], y=layout[person_id][1])
 
         #we want edges to inherit color from the FROM node, so we start with the quarantined nodes, then the
         # asymptomatic spreaders, then the healthy nodes.
@@ -108,6 +127,9 @@ class Graph:
             for contact in self.ids_dict[id].contacts:
                 campus.add_edge(id, contact)
         campus.inherit_edge_colors(True)
+        campus.toggle_physics(False)
+        campus.toggle_stabilization(False)
+        #campus.set_options('var options = {"nodes": {"fixed": {"x": true,"y": true}},"edges": {"color": {"inherit": true},"smooth": false},"physics": {"enabled": false,"minVelocity": 0.75}}')
         return campus
 
     def show_graph(self, prob_close, prob_tang, pos):
